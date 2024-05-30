@@ -5,8 +5,6 @@ from matm.Shot import Shot
 
 import xml.etree.ElementTree as ET
 import re
-from urllib.parse import unquote
-import csv
 
 RENDER_FILE_TYPES = {"mov"}
 
@@ -28,8 +26,6 @@ def process_audio(episode: Episode):
     # if there's a transition. That necessitates a 2-pass process over each track.
     #
 
-    track_names = []
-    audio_files = []
     important_tags = ["clipitem", "transitionitem"]
 
     for audio in episode.root.findall("./sequence/media/audio"):
@@ -38,7 +34,7 @@ def process_audio(episode: Episode):
 
             if "MZ.TrackName" in track.attrib:
                 track_name = track.attrib["MZ.TrackName"]
-                track_names.append(track_name)
+                episode.track_names.append(track_name)
             else:
                 track_name = "undefined"
 
@@ -89,12 +85,12 @@ def process_audio(episode: Episode):
                 af.effects = filters
 
                 found = False
-                for a in audio_files:
+                for a in episode.audio_files:
                     if a == af:
                         found = True
                         continue
                 if not found:
-                    audio_files.append(af)
+                    episode.audio_files.append(af)
 
             audio.remove(track)
 
