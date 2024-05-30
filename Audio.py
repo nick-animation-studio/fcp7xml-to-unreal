@@ -7,44 +7,44 @@ class AudioFile:
     def __init__(
         self, filename, path, masterclipid, startFrame, endFrame, trackName, trackColor
     ):
-        self._filename = filename
-        self._path = path
-        self._masterclipid = masterclipid
-        self._sf = int(startFrame)
-        self._ef = int(endFrame)
-        self._trackname = trackName
-        self._trackcolor = trackColor
-        self._printed = False
-        self._effects = []
-        self._shotlist = []
+        self.filename = filename
+        self.path = path
+        self.masterclipid = masterclipid
+        self.sf = int(startFrame)
+        self.ef = int(endFrame)
+        self.trackname = trackName
+        self.trackcolor = trackColor
+        self.printed = False
+        self.effects = []
+        self.shotlist = []
 
-        self._label = ""
-        if self._trackcolor == "Yellow":
-            self._label = "From Viacom Library"
-        if self._trackcolor == "Brown":
+        self.label = ""
+        if self.trackcolor == "Yellow":
+            self.label = "From Viacom Library"
+        if self.trackcolor == "Brown":
             if self.is_dialogue():
-                self._label = "Scratch VO"
+                self.label = "Scratch VO"
             else:
-                self._label = "Unlicensed Material"
+                self.label = "Unlicensed Material"
 
         # if _ef is -1, we can grab in and out, subtract in from out, add to sf to get ef
 
-        if (self._sf == -1) | (self._ef == -1):
-            self._badTC = True
+        if (self.sf == -1) | (self.ef == -1):
+            self.badTC = True
         else:
-            self._badTC = False
+            self.badTC = False
 
-        # print( f"Creating AudioFile named {self._filename}")
+        # print( f"Creating AudioFile named {self.filename}")
 
     def is_music(self):
-        return self._trackname.startswith("Music")
+        return self.trackname.startswith("Music")
 
     def is_sfx(self):
-        return self._trackname.startswith("SFX")
+        return self.trackname.startswith("SFX")
 
     def is_dialogue(self):
-        sfx_or_music = (self._trackname.startswith("SFX")) | (
-            self._trackname.startswith("Music")
+        sfx_or_music = (self.trackname.startswith("SFX")) | (
+            self.trackname.startswith("Music")
         )
         return not sfx_or_music
 
@@ -66,19 +66,19 @@ class AudioFile:
 
     def dump(self):
 
-        shotlist = ", ".join([s._name for s in self._shotlist])
-        fx = ", ".join(self._effects)
+        shotlist = ", ".join([s.name for s in self.shotlist])
+        fx = ", ".join(self.effects)
 
         return [
-            self._trackname,
-            self._filename,
-            frames_to_TC(self._sf),
-            frames_to_TC(self._ef),
+            self.trackname,
+            self.filename,
+            frames_to_TC(self.sf),
+            frames_to_TC(self.ef),
             shotlist,
-            self._trackcolor,
-            self._label,
+            self.trackcolor,
+            self.label,
             fx,
-            unquote(self._path),
+            unquote(self.path),
         ]
 
     def __str__(self):
@@ -87,9 +87,9 @@ class AudioFile:
 
     def __eq__(self, x):
         return (
-            (self._filename == x._filename)
-            & (self._sf == x._sf)
-            & (self._ef == x._ef)
-            & (self._trackname == x._trackname)
-            & (self._trackcolor == x._trackcolor)
+            (self.filename == x.filename)
+            & (self.sf == x.sf)
+            & (self.ef == x.ef)
+            & (self.trackname == x.trackname)
+            & (self.trackcolor == x.trackcolor)
         )

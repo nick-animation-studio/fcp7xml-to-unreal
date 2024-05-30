@@ -4,7 +4,8 @@ class Episode:
         self.file = xml_file
         self.root = root
         self.shots = []
-        self.audio = None
+        self.track_names = []
+        self.audio_files = []
         self.shot_count = 0
         self.removed = 0
         self.fx_shots = 0
