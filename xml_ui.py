@@ -64,7 +64,6 @@ def output_filtered_xml():
 
 
 root = tk.Tk()
-root.geometry("600x150")
 root.resizable(True, True)
 root.title("MATM -- Upload a CSV to SyncSketch")
 frm = ttk.Frame(root, padding=10)
@@ -73,16 +72,18 @@ frm.grid()
 xml_file_string = tk.StringVar()
 xml_file_string.set("Please choose an XML file")
 
-ss_textbox = tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
-    column=0, row=0, sticky="news", columnspan=3
-)
-
-ttk.Button(frm, text="Choose an xml", command=xml_to_episode).grid(column=3, row=0)
-
 
 create_button("Audio report", output_audio)
 create_button("CG Fixes report", output_cgfixes)
 create_button("Conform report", output_conform)
 create_button("Output filtered XML", output_filtered_xml)
+
+ss_textbox = tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
+    column=0, row=0, sticky="news", columnspan=len(XML_FUNCTIONS) - 1
+)
+
+ttk.Button(frm, text="Choose an xml", command=xml_to_episode).grid(
+    column=len(XML_FUNCTIONS) - 1, row=0
+)
 
 root.mainloop()
