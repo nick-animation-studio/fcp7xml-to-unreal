@@ -1,12 +1,23 @@
 from email.mime import audio
 import tkinter as tk
-from tkinter import END, RIGHT, Toplevel, ttk
+from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, ttk
 from tkinter import filedialog
+from xml.etree.ElementTree import XML
 
 from xml_helpers.ingest import *
 from xml_helpers.reports import *
+from xml_helpers.filter import *
 
 CURRENT_EPISODE = None
+XML_FUNCTIONS = []
+
+
+def create_button(label, function):
+    global XML_FUNCTIONS
+    button = ttk.Button(frm, text=label, command=function)
+    button.grid(column=len(XML_FUNCTIONS), row=1)
+    button.config(state=DISABLED)
+    XML_FUNCTIONS.append(button)
 
 
 def xml_to_episode():
@@ -16,6 +27,8 @@ def xml_to_episode():
     xml_file_string.set(xml)
     global CURRENT_EPISODE
     CURRENT_EPISODE = ingest(xml)
+    for button in XML_FUNCTIONS:
+        button.config(state=NORMAL)
 
 
 def show_output(output):
@@ -46,6 +59,10 @@ def output_conform():
     show_output(conform_report(CURRENT_EPISODE))
 
 
+def output_filtered_xml():
+    show_output(write_filtered(CURRENT_EPISODE, xml_file_string.get()))
+
+
 root = tk.Tk()
 root.geometry("600x150")
 root.resizable(True, True)
@@ -59,9 +76,13 @@ xml_file_string.set("Please choose an XML file")
 ss_textbox = tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
     column=0, row=0, sticky="news", columnspan=3
 )
-ttk.Button(frm, text="Choose an xml", command=xml_to_episode).grid(column=1, row=1)
 
-ttk.Button(frm, text="Audio report", command=output_audio).grid(column=0, row=2)
-ttk.Button(frm, text="CG Fixes report", command=output_cgfixes).grid(column=1, row=2)
-ttk.Button(frm, text="Conform report", command=output_conform).grid(column=2, row=2)
+ttk.Button(frm, text="Choose an xml", command=xml_to_episode).grid(column=3, row=0)
+
+
+create_button("Audio report", output_audio)
+create_button("CG Fixes report", output_cgfixes)
+create_button("Conform report", output_conform)
+create_button("Output filtered XML", output_filtered_xml)
+
 root.mainloop()
