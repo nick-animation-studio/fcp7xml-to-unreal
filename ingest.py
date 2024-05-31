@@ -190,6 +190,9 @@ def process_video(episode: Episode):
                                 params.pop("rotation")
                         this_shot.add_fx(fx_type, params)
 
+                    if len(this_shot.fx.keys()) > 0:
+                        episode.fx_shots.append(this_shot)
+
             elif name[-3:] == "png":
 
                 basename = name[:-4]
@@ -247,12 +250,9 @@ def process_notes(episode: Episode):
 
 
 def ingest(xml_file):
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
+    episode = Episode(xml_file)
 
-    episode = Episode(xml_file, root)
-
-    video_tracks = root.findall("./sequence/media/video")
+    video_tracks = episode.root.findall("./sequence/media/video")
     for video in video_tracks:
         tracks_removed = 0
         for track in video.findall("track"):
