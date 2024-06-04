@@ -72,8 +72,8 @@ class AudioFile:
         return [
             self.trackname,
             self.filename,
-            frames_to_TC(self.sf),
-            frames_to_TC(self.ef),
+            frames_to_tc(self.sf),
+            frames_to_tc(self.ef),
             shotlist,
             self.trackcolor,
             self.label,
