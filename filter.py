@@ -7,4 +7,5 @@ def write_filtered(episode: Episode, xml_file):
         output += str(shot) + "\n"
     outfile = xml_file[:-4] + "_filtered" + ".xml"
     episode.tree.write(outfile)
+    print(f"Wrote filtered xml to file: {outfile}")
     return output

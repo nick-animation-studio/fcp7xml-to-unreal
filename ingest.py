@@ -101,7 +101,10 @@ def process_video(episode: Episode):
         for clipitem in track.findall("clipitem"):
 
             name = clipitem.find("name").text
-
+            # remove disabled clips entirely
+            if clipitem.find("enabled").text == "FALSE":
+                track.remove(clipitem)
+                continue
             start = clipitem.find("start").text
             end = clipitem.find("end").text
 
@@ -116,6 +119,7 @@ def process_video(episode: Episode):
                 # hard-coding some known bad mp4 names
                 if name in BAD_CLIP_NAMES:
                     track.remove(clipitem)
+                    episode.shots.remove(this_shot)
                     continue
 
                 # get rid of (2) and such if there
@@ -139,6 +143,7 @@ def process_video(episode: Episode):
                     print(f"**** Shot {newname} has bogus start/end frames.")
                     print("Need to fix, but for now eliminating entirely.")
                     track.remove(clipitem)
+                    episode.shots.remove(this_shot)
                     continue
 
                 episode.sshots.append(this_shot)
@@ -212,9 +217,16 @@ def process_video(episode: Episode):
                 elif basename[:3] in ["seq"]:
                     episode.seqs.append(this_shot)
 
+            else:
+                episode.shots.remove(this_shot)
+                track.remove(clipitem)
+
+    # figure out full TC of episode, minus slate
+    minF = 10000
+    maxF = -1
     for cshot in episode.cshots:
-        episode.minF = min(episode.minF, cshot.ef)
-        episode.maxF = max(episode.maxF, cshot.ef)
+        minF = min(minF, cshot.ef)
+        maxF = max(maxF, cshot.ef)
 
     # map cshots to their sequences
     for cshot in episode.cshots:
@@ -227,6 +239,23 @@ def process_video(episode: Episode):
                 continue
         if in_seq == False:
             print(f"Shot {cshot.name} not in any sequence")
+
+    # Removed unmapped story shots
+    for sshot in episode.sshots:
+        in_seq = False
+        for seq in episode.seqs:
+            if seq.contains(sshot):
+                in_seq = True
+                continue
+        if in_seq == False:
+            print(f"Shot {sshot.name} not in any sequence, removing")
+            for track in episode.root.findall("./sequence/media/video/track"):
+                for clipitem in track.findall("clipitem"):
+                    name = clipitem.find("name").text
+                    if name == sshot.name:
+                        track.remove(clipitem)
+            episode.sshots.remove(sshot)
+            episode.shots.remove(sshot)
 
 
 def process_notes(episode: Episode):
