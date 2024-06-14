@@ -217,6 +217,10 @@ def process_video(episode: Episode):
                 elif basename[:3] in ["seq"]:
                     episode.seqs.append(this_shot)
 
+                else:
+                    episode.shots.remove(this_shot)
+                    track.remove(clipitem)
+
             else:
                 episode.shots.remove(this_shot)
                 track.remove(clipitem)
