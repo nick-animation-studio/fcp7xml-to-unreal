@@ -3,22 +3,43 @@ from urllib.parse import unquote
 
 
 class AudioFile:
+    OUTPUT_VALS = [
+        "trackname",
+        "filename",
+        "starttime",
+        "endtime",
+        "shotlist",
+        "trackcolor",
+        "label",
+        "effects",
+        "path",
+    ]
 
     def __init__(
-        self, filename, path, masterclipid, startFrame, endFrame, trackName, trackColor
+        self,
+        filename,
+        path,
+        masterclipid,
+        startFrame,
+        endFrame,
+        trackName=None,
+        trackColor=None,
     ):
+        self.trackname = trackName
         self.filename = filename
-        self.path = path
+        self.path = unquote(path)
         self.masterclipid = masterclipid
         self.sf = int(startFrame)
+        self.starttime = frames_to_tc(self.sf)
         self.ef = int(endFrame)
-        self.trackname = trackName
+        self.endtime = frames_to_tc(self.ef)
+
         self.trackcolor = trackColor
         self.printed = False
         self.effects = []
         self.shotlist = []
 
-        self.label = ""
+        self.label = None
         if self.trackcolor == "Yellow":
             self.label = "From Viacom Library"
         if self.trackcolor == "Brown":
@@ -48,42 +69,13 @@ class AudioFile:
         )
         return not sfx_or_music
 
-    #
-    # header and info dumping should be more coordinated, it's too easy for these to get out of sync.
-    #
-    def dump_header(self):
-        return [
-            "TRACK",
-            "FILE",
-            "START_TC",
-            "END_TC",
-            "SHOTLIST",
-            "COLOR",
-            "LABEL",
-            "EFFECTS",
-            "PATH",
-        ]
-
-    def dump(self):
-
-        shotlist = ", ".join([s.name for s in self.shotlist])
-        fx = ", ".join(self.effects)
-
-        return [
-            self.trackname,
-            self.filename,
-            frames_to_tc(self.sf),
-            frames_to_tc(self.ef),
-            shotlist,
-            self.trackcolor,
-            self.label,
-            fx,
-            unquote(self.path),
-        ]
+    def to_list(self):
+        return [getattr(self, key) for key in self.OUTPUT_VALS]
 
     def __str__(self):
-
-        return ",".join(self.dump())
+        as_list = self.to_list()
+        as_list = [f"{i}" for i in as_list]
+        return ",".join(as_list)
 
     def __eq__(self, x):
         return (
