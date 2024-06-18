@@ -3,6 +3,8 @@ import os
 import subprocess
 import tempfile
 
+from matm.Audio import AudioFile
+
 
 def audio_report(episode, to_csv=False):
     # create a dictionary of master clip id to name so we can get the path of any audiofile
@@ -23,7 +25,7 @@ def audio_report(episode, to_csv=False):
         if af.is_dialogue():
             for cshot in episode.cshots:
                 if cshot.overlaps(af.sf, af.ef):
-                    af.shotlist.append(cshot)
+                    af.shotlist.append(cshot.name)
 
     # now write out
 
@@ -37,7 +39,7 @@ def audio_report(episode, to_csv=False):
             for tn in episode.track_names:
                 for af in episode.audio_files:
                     if (af.trackname == tn) & (af.printed == False):
-                        csvwriter.writerow(af.dump())
+                        csvwriter.writerow(af.to_list())
                         af.printed = True
         tmpfile.close()
         try:
@@ -48,12 +50,10 @@ def audio_report(episode, to_csv=False):
 
     else:
         output = ""
-        output += str(episode.audio_files[0].dump_header()) + "\n"
-        for tn in episode.track_names:
-            for af in episode.audio_files:
-                if (af.trackname == tn) & (af.printed == False):
-                    output += str(af.dump()) + "\n"
-                    af.printed = True
+        output += ",".join(AudioFile.OUTPUT_VALS) + "\n"
+        for af in episode.audio_files:
+            output += str(af) + "\n"
+            af.printed = True
         return output
 
 
@@ -70,13 +70,13 @@ def cgfixes_report(episode):
         if shot.name == lastshot:
             # check for frame parity
             if last_ef == shot.sf:
-                output += f"{shot.name[:-4]},appears back to back\n"
+                output += f"{shot.name[:-4]}, appears back to back\n"
         lastshot = shot.name
         last_ef = shot.ef
 
     for shot in episode.sshots:
         if shot.name.split(".")[0].split("_")[-1].isdigit():
-            output += f"{shot.name[:-4]},likely versioned incorrectly in premiere\n"
+            output += f"{shot.name[:-4]}, likely versioned incorrectly in premiere\n"
 
     for shot in episode.sshots:
         if shot.has_fx():

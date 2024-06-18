@@ -8,13 +8,14 @@ import re
 
 RENDER_FILE_TYPES = {"mov"}
 
-BAD_CLIP_NAMES = {
+CLIPS_TO_IGNORE = {
     "Max_animation_promo_may14_v4.mp4",
     "Screen Recording 2022-08-19 at 4.35.35 PM.mp4",
     "MATM_101_Welcome_to_Byjovia_ColdOpenWIP_220830.mp4",
     "MATM_Main-Tilte-Placeholder_220819.mp4",
     "8mm overlay film borders.mp4",
     "Light-flicker.mp4",
+    "MT_FlameMatte_1.mov",
 }
 
 
@@ -31,7 +32,6 @@ def process_audio(episode: Episode):
     for audio in episode.root.findall("./sequence/media/audio"):
 
         for track in audio.findall("track"):
-
             if "MZ.TrackName" in track.attrib:
                 track_name = track.attrib["MZ.TrackName"]
                 episode.track_names.append(track_name)
@@ -117,7 +117,7 @@ def process_video(episode: Episode):
             if name[-3:] in RENDER_FILE_TYPES:
 
                 # hard-coding some known bad mp4 names
-                if name in BAD_CLIP_NAMES:
+                if name in CLIPS_TO_IGNORE:
                     track.remove(clipitem)
                     episode.shots.remove(this_shot)
                     continue
@@ -297,5 +297,4 @@ def ingest(xml_file):
     process_audio(episode)
     process_video(episode)
     process_notes(episode)
-
     return episode
