@@ -59,6 +59,15 @@ class Episode:
             if shot.contains(note):
                 shot.notes.append(note)
 
+    def write_filtered(self):
+        output = "Check FX Shots: \n"
+        for shot in self.fx_shots:
+            output += str(shot) + "\n"
+        outfile = self.file[:-4] + "_filtered" + ".xml"
+        self.tree.write(outfile)
+        print(f"Wrote filtered xml to file: {outfile}")
+        return output
+
     def process_audio(self):
         #
         # AUDIO
