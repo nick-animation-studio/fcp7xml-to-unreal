@@ -1,72 +1,67 @@
-from email.mime import audio
-import tkinter as tk
-from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, ttk
-from tkinter import filedialog
-from xml.etree.ElementTree import XML
+from matm.Episode import Episode
 
-from xml_helpers.ingest import *
 from xml_helpers.reports import *
 from xml_helpers.filter import *
 from xml_helpers.syncsketch import *
 
-CURRENT_EPISODE = None
-XML_FUNCTIONS = []
+import tkinter as tk
+from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, ttk
+from tkinter import filedialog
 
 
-def create_button(label, function):
-    global XML_FUNCTIONS
-    button = ttk.Button(frm, text=label, command=function)
-    button.grid(column=len(XML_FUNCTIONS), row=2)
-    button.config(state=DISABLED)
-    XML_FUNCTIONS.append(button)
+class xmlUI:
+    def __init__(self, episode=None, xml_functions=[]):
+        self.current_episode = episode
+        self.xml_functions = xml_functions
+
+    def output_audio(self):
+        output = audio_report(self.current_episode)
+        if output is not None:
+            self.show_output(output)
+
+    def output_cgfixes(self):
+        self.show_output(cgfixes_report(self.current_episode))
+
+    def output_conform(self):
+        self.show_output(conform_report(self.current_episode))
+
+    def output_filtered_xml(self):
+        self.show_output(write_filtered(self.current_episode, xml_file_string.get()))
+
+    def output_syncsketch(self):
+        self.show_output(upload(self.current_episode, ss_link.get()))
+
+    def create_button(self, label, function):
+        button = ttk.Button(frm, text=label, command=function)
+        button.grid(column=len(self.xml_functions), row=2)
+        button.config(state=DISABLED)
+        self.xml_functions.append(button)
+
+    def xml_to_episode(self):
+        xml = filedialog.askopenfilename(
+            title="Choose XML to use", filetypes=[("XMLs", "*.xml")]
+        )
+        xml_file_string.set(xml)
+        self.current_episode = Episode(xml)
+        for button in self.xml_functions:
+            button.config(state=NORMAL)
+
+    @classmethod
+    def show_output(output):
+        new_window = Toplevel(root)
+        new_window.title("Output")
+
+        scroll = tk.Scrollbar(new_window, orient="vertical")
+        scroll.pack(side=RIGHT, fill="y")
+
+        msg = tk.Text(new_window, yscrollcommand=scroll.set)
+        msg.insert(END, output)
+
+        scroll.config(command=msg.yview)
+        msg.pack()
 
 
-def xml_to_episode():
-    xml = filedialog.askopenfilename(
-        title="Choose XML to use", filetypes=[("XMLs", "*.xml")]
-    )
-    xml_file_string.set(xml)
-    global CURRENT_EPISODE
-    CURRENT_EPISODE = ingest(xml)
-    for button in XML_FUNCTIONS:
-        button.config(state=NORMAL)
-
-
-def show_output(output):
-    new_window = Toplevel(root)
-    new_window.title("Output")
-
-    scroll = tk.Scrollbar(new_window, orient="vertical")
-    scroll.pack(side=RIGHT, fill="y")
-
-    msg = tk.Text(new_window, yscrollcommand=scroll.set)
-    msg.insert(END, output)
-
-    scroll.config(command=msg.yview)
-    msg.pack()
-
-
-def output_audio():
-    output = audio_report(CURRENT_EPISODE)
-    if output is not None:
-        show_output(output)
-
-
-def output_cgfixes():
-    show_output(cgfixes_report(CURRENT_EPISODE))
-
-
-def output_conform():
-    show_output(conform_report(CURRENT_EPISODE))
-
-
-def output_filtered_xml():
-    show_output(write_filtered(CURRENT_EPISODE, xml_file_string.get()))
-
-
-def output_syncsketch():
-    show_output(upload(CURRENT_EPISODE, ss_link.get()))
-
+xml_ui = xmlUI()
 
 root = tk.Tk()
 root.resizable(True, True)
@@ -80,22 +75,21 @@ xml_file_string.set("Please choose an XML file")
 ss_link = tk.StringVar()
 ss_link.set("If using upload, enter a syncsketch link")
 
-create_button("Audio report", output_audio)
-create_button("CG Fixes report", output_cgfixes)
-create_button("Conform report", output_conform)
-create_button("Output filtered XML", output_filtered_xml)
-create_button("Upload notes to syncsketch", output_syncsketch)
+xml_ui.create_button("Audio report", xml_ui.output_audio)
+xml_ui.create_button("CG Fixes report", xml_ui.output_cgfixes)
+xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)
+xml_ui.create_button("Upload notes to syncsketch", xml_ui.output_syncsketch)
 
 xml_textbox = tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
-    column=0, row=0, sticky="news", columnspan=len(XML_FUNCTIONS) - 1
+    column=0, row=0, sticky="news", columnspan=len(xml_ui.xml_functions) - 1
 )
 
-ttk.Button(frm, text="Choose an xml", command=xml_to_episode).grid(
-    column=len(XML_FUNCTIONS) - 1, row=0
+ttk.Button(frm, text="Choose an xml", command=xml_ui.xml_to_episode).grid(
+    column=len(xml_ui.xml_functions) - 1, row=0
 )
 
 syncsketch_textbox = tk.Entry(frm, textvariable=ss_link, width=100).grid(
-    column=0, row=1, sticky="news", columnspan=len(XML_FUNCTIONS) - 1
+    column=0, row=1, sticky="news", columnspan=len(xml_ui.xml_functions) - 1
 )
 
 root.mainloop()
