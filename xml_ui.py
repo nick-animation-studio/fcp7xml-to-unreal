@@ -1,7 +1,6 @@
 from matm.Episode import Episode
 
 from xml_helpers.reports import *
-from xml_helpers.filter import *
 from xml_helpers.syncsketch import *
 
 import tkinter as tk
@@ -26,7 +25,27 @@ class xmlUI:
         self.show_output(conform_report(self.current_episode))
 
     def output_filtered_xml(self):
-        self.show_output(write_filtered(self.current_episode, xml_file_string.get()))
+        self.show_output(
+            self.write_filtered(self.current_episode, xml_file_string.get())
+        )
+
+    def confirm_upload(self):
+        new_window = Toplevel(root)
+        new_window.resizable(True, True)
+        new_window.title("Confirm Upload")
+
+        xml_name = self.current_episode.file.rsplit("/", 1)[1]
+        syncsketch_name = get_name(ss_link.get())
+
+        frm = ttk.Frame(new_window, padding=10)
+        frm.grid()
+
+        ttk.Label(frm, text=f"Upload notes from {xml_name} to {syncsketch_name}?").grid(
+            column=0, row=0
+        )
+        ttk.Button(frm, text="Confirm", command=self.output_syncsketch).grid(
+            column=0, row=1
+        )
 
     def output_syncsketch(self):
         self.show_output(upload(self.current_episode, ss_link.get()))
@@ -78,7 +97,7 @@ ss_link.set("If using upload, enter a syncsketch link")
 xml_ui.create_button("Audio report", xml_ui.output_audio)
 xml_ui.create_button("CG Fixes report", xml_ui.output_cgfixes)
 xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)
-xml_ui.create_button("Upload notes to syncsketch", xml_ui.output_syncsketch)
+xml_ui.create_button("Upload notes to syncsketch", xml_ui.confirm_upload)
 
 xml_textbox = tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
     column=0, row=0, sticky="news", columnspan=len(xml_ui.xml_functions) - 1
