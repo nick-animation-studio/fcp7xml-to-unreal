@@ -65,8 +65,7 @@ class xmlUI:
         for button in self.xml_functions:
             button.config(state=NORMAL)
 
-    @classmethod
-    def show_output(output):
+    def show_output(self, output):
         new_window = Toplevel(root)
         new_window.title("Output")
 
