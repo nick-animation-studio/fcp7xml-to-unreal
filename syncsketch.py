@@ -1,12 +1,4 @@
-import os
-import subprocess
 import sys
-import csv
-import tempfile
-import threading
-import tkinter as tk
-from tkinter import END, RIGHT, Message, Tk, Toplevel, ttk, filedialog
-from tqdm.tk import tqdm, tqdm_tk
 
 import syncsketch
 
@@ -57,6 +49,23 @@ def get_item_id(s, review_id, syncsketch_link):
             return item["id"]
     print(f"ERROR: can't find an item matching the URL provided")
     return None
+
+
+def get_name(syncsketch_link):
+    s = connect_to_syncsketch()
+    if s:
+        print("Successfully connected to syncsketch")
+    project_id = get_project_id(s)
+    if project_id is None:
+        return
+    review_id = get_review_id(s, project_id, syncsketch_link)
+    if review_id is None:
+        return
+    item_id = get_item_id(s, review_id, syncsketch_link)
+    if item_id is None:
+        return
+    item = s.get_item(item_id)
+    return item["name"]
 
 
 def max_post_comment(s, item_id, comment, review_id, start_frame):
