@@ -25,9 +25,7 @@ class xmlUI:
         self.show_output(conform_report(self.current_episode))
 
     def output_filtered_xml(self):
-        self.show_output(
-            self.write_filtered(self.current_episode, xml_file_string.get())
-        )
+        self.show_output(self.current_episode.write_filtered())
 
     def confirm_upload(self):
         new_window = Toplevel(root)
