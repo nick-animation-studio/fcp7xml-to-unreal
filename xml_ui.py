@@ -93,6 +93,7 @@ ss_link.set("If using upload, enter a syncsketch link")
 
 xml_ui.create_button("Audio report", xml_ui.output_audio)
 xml_ui.create_button("CG Fixes report", xml_ui.output_cgfixes)
+xml_ui.create_button("Conform report", xml_ui.output_conform)
 xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)
 xml_ui.create_button("Upload notes to syncsketch", xml_ui.confirm_upload)
 
