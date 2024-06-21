@@ -18,6 +18,19 @@ class Episode:
         "8mm overlay film borders.mp4",
         "Light-flicker.mp4",
         "MT_FlameMatte_1.mov",
+        "Ep202_Sc06_For-Boards_240422.mov",
+        "Ep202_Sc03_For-Boards_240423.mov",
+        "Ep202_Sc1_Boards_240423.mov",
+        "Ep202_Sc05_For-Boards_240422.mov",
+        "Ep202_Sc04_For-Boards_240422.mov",
+        "Ep202_Sc07_From-Boards_240306_Alpha test.mov",
+        "Ep202_Sc09_For-Boards_240422.mov",
+        "Ep202_Sc010_For-Boards_240422.mov",
+        "Ep202_Sc012a_For-Boards_240422.mov",
+        "Ep202_Sc012b_For-Boards_240422.mov",
+        "Ep202_Sc012c_For-Boards_240422.mov",
+        "Ep202_Sc1_Boards_240423.mov",
+        "",
     }
 
     def __init__(self, xml_file):
