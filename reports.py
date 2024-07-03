@@ -121,8 +121,10 @@ def conform_report(episode):
     if len(sorted_seqs) > 0:
         last_seq = sorted_seqs[0]
         for seq in sorted_seqs[1:]:
-            if last_seq + 1 != seq:
-                output += f"SCENE COUNT WARNING: missing scene suspected between {last_seq:d} and {seq}\n"
+            if last_seq == seq:
+                output += f"SCENE BURNIN WARNING: scene {last_seq} burnin exists multiple times\n"
+            elif last_seq +1 < seq:
+                output += f"SCENE BURNIN WARNING: scene burnin may be missing between {last_seq} and {seq}\n"
             last_seq = seq
 
     # now check each sequence for consecutive shots (looking for skipped burnins)
