@@ -92,22 +92,18 @@ def upload(episode: Episode, syncsketch_link: str):
     if item_id is None:
         return
 
-    notes = []
     comments_missing_tag = []
 
-    for shot in episode.shots:
-        for note in shot.notes:
-            notes.append(note)
-    print(f"Found {len(notes)} comments to upload")
-    for note in notes:
+    print(f"Found {len(episode.notes)} comments to upload")
+    for note in episode.notes:
         tagged = len(note.tags) > 0
         if not tagged:
-            comments_missing_tag.append((note.sf, note.text))
+            comments_missing_tag.append(note)
         max_post_comment(s, item_id, note.text, review_id, note.sf)
-    print("Successfully uploaded csv to syncsketch")
+    print("Successfully uploaded notes to syncsketch")
     if len(comments_missing_tag) > 0:
         warning = "Warning, found thefollowing comments missing tags. Please review\n"
         for note in comments_missing_tag:
-            warning += f"Start frame: {note.sf} {note.text[1][0:10]} ...\n"
+            warning += f"Start frame: {note.sf} {note.text[0:10]} ...\n"
         return warning
-    return None
+    return ""
