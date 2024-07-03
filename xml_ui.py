@@ -64,6 +64,9 @@ class xmlUI:
             button.config(state=NORMAL)
 
     def show_output(self, output):
+
+        if len(output) == 0:
+            output = "No errors found!"
         new_window = Toplevel(root)
         new_window.title("Output")
 
@@ -81,7 +84,7 @@ xml_ui = xmlUI()
 
 root = tk.Tk()
 root.resizable(True, True)
-root.title("MATM -- Upload a CSV to SyncSketch")
+root.title("MATM -- XML supertool")
 frm = ttk.Frame(root, padding=10)
 frm.grid()
 
