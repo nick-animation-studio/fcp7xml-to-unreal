@@ -53,6 +53,7 @@ class Episode:
         self.fx_shots = []
 
         self.seqs = []
+        self.notes = []
 
         video_tracks = self.root.findall("./sequence/media/video")
         for video in video_tracks:
@@ -63,9 +64,11 @@ class Episode:
                     video.remove(track)
                     continue
 
+        self.process_notes()
         self.process_audio()
         self.process_video()
-        self.process_notes()
+        for note in self.notes:
+            self.add_note(note)
 
     def add_note(self, note):
         for shot in self.shots:
@@ -331,6 +334,7 @@ class Episode:
                 self.shots.remove(sshot)
 
     def process_notes(self):
+        count = 0
         for track in self.root.findall("./sequence/media/video/track"):
             for clipitem in track.findall("clipitem"):
                 for note in clipitem.findall("filter/effect"):
@@ -346,5 +350,6 @@ class Episode:
                         all_tags = ",".join(tags)
                         nontags = [word for word in words if word not in all_tags]
                         comment_without_tags = " ".join(nontags)
-
-                        self.add_note(Note(start, end, tags, comment_without_tags))
+                        self.notes.append(Note(start, end, tags, comment_without_tags))
+                        count += 1
+        print(count)
