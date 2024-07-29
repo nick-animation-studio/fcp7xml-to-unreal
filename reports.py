@@ -123,7 +123,7 @@ def conform_report(episode):
         for seq in sorted_seqs[1:]:
             if last_seq == seq:
                 output += f"SCENE BURNIN WARNING: scene {last_seq} burnin exists multiple times\n"
-            elif last_seq +1 < seq:
+            elif last_seq + 1 < seq:
                 output += f"SCENE BURNIN WARNING: scene burnin may be missing between {last_seq} and {seq}\n"
             last_seq = seq
 
@@ -142,7 +142,7 @@ def conform_report(episode):
         last_shot_num = int(shotlist[-1][-3:])
         if last_shot_num != len(shotlist):
             output += f"SHOT COUNT WARNING: sequence {seq.name}!\n"
-            output += shotlist + "\n"
+            output += f"{len(shotlist)} shots but ends on shot {last_shot_num}\n"
 
         # we have a sorted list of shot names. Let's go through them in order, see what their CG
         # counterpart is, and flag consecutive duplicates.
