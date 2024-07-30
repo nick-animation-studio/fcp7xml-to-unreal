@@ -64,23 +64,29 @@ def cgfixes_report(episode):
     # want to sort this list by starting frame
     episode.sshots.sort(key=lambda x: x.sf)
     output = ""
+    output = "Scene #,Shot #,Fix Type,Text from cgfix report,Note,"
+    output += "Source,Vis Artist Fixing,Status,Revised Shot #,Date Finished,Delivery Note\n"
     lastshot = None
     last_ef = None
     for shot in episode.sshots:
         if shot.name == lastshot:
             # check for frame parity
             if last_ef == shot.sf:
-                output += f"{shot.name[:-4]}, appears back to back\n"
+                output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,appears back to back\n"
         lastshot = shot.name
         last_ef = shot.ef
 
     for shot in episode.sshots:
-        if shot.name.split(".")[0].split("_")[-1].isdigit():
-            output += f"{shot.name[:-4]}, likely versioned incorrectly in premiere\n"
+        reported = []
+        # this is catching shots named 205_08_shot_98 which are valid
+        # going to specifically look for _1 and _2 and flag those.
+        tail = shot.name.split(".")[0].split("_")[-1]
+        if (tail == "1") | (tail == "2"):
+            output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,likely versioned incorrectly in premiere\n"
 
     for shot in episode.sshots:
         if shot.has_fx():
-            output += f"{shot.name[:-4]},{shot.fx_str()}\n"
+            output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,{shot.fx_str()}\n"
     return output
 
 
@@ -112,8 +118,8 @@ def conform_report(episode):
             cg_shots += 1
             for m in matched:
                 mtype = cshot.match(m)
-                if mtype != "perfect":
-                    output += f"Conform mismatch detected:\n\t{cshot}\n\t{m}\n"
+                if mtype == "close":
+                    output += f"Possible conform mismatch detected:\n\t{cshot}\n\t{m}\n"
 
     # check to make sure we have consecutive scenes.
     sorted_seqs = [int(s.name[3:-4]) for s in episode.seqs]
