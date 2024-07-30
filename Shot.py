@@ -14,12 +14,15 @@ class Shot:
 
         self.notes = []
 
+    def scene_number(self):
+        return self.name.split("_")[1]
+    
     def is_valid(self):
         print(self.ip, " ", self.op, " ", self.sf, " ", self.ef)
         return True
 
     def __str__(self):
-        outstr = f"{self.name:30s} {self.sf:6d} {self.ef:6d}" + self.fx_str()
+        outstr = f"{self.name:30s} {self.sf:6d} {self.ef:6d}"
         return outstr
 
     def fx_str(self):
@@ -31,11 +34,15 @@ class Shot:
         return outstr
 
     def match(self, s):
+
+        # Logic is this:
+        # If both start and end frames match, it's "perfect"
+        # If the above isn't true, and both start and end are within 2, it's "close"
+        # Otherwise it's not a match (None)
+        
         if (self.sf == s.sf) & (self.ef == s.ef):
             return "perfect"
-        elif (self.sf in range(s.sf - 1, s.sf + 2)) | (
-            self.ef in range(s.ef - 1, s.ef + 2)
-        ):
+        elif (self.ef in range(s.ef - 2, s.ef + 2)) & (self.sf in range(s.sf - 2, s.sf + 2)):
             return "close"
         else:
             return None
