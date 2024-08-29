@@ -32,7 +32,7 @@ def get_project_id(s):
 
 
 def get_review_id(s, project_id, syncsketch_link):
-    reviews = s.get_reviews_by_project_id(project_id)["objects"]
+    reviews = s.get_reviews_by_project_id(project_id, limit=1000)["objects"]
     syncsketch_link = syncsketch_link.replace("nick.", "www.")
     syncsketch_link = syncsketch_link.replace("#/", "/")
     for review in reviews:
