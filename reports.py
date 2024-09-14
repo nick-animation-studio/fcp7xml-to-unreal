@@ -63,7 +63,10 @@ def cgfixes_report(episode):
 
     # want to sort this list by starting frame
     episode.sshots.sort(key=lambda x: x.sf)
-    output = ""
+    output = "Scene #,Shot #,Fix Type,Text from cgfix report,Note,"
+    output += (
+        "Source,Vis Artist Fixing,Status,Revised Shot #,Date Finished,Delivery Note\n"
+    )
     lastshot = None
     last_ef = None
     for shot in episode.sshots:
