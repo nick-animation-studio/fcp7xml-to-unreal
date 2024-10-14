@@ -92,6 +92,16 @@ def conform_report(episode):
     cg_shots = 0
     output = ""
 
+    # map cshots to their sequences
+    for cshot in episode.cshots:
+        in_seq = False
+        for seq in episode.seqs:
+            if seq.contains(cshot):
+                in_seq = True
+                continue
+        if in_seq == False:
+            output += f"Shot {cshot.name} not in any sequence!\n"
+                
     for cshot in episode.cshots:
         matched = []
         for sshot in episode.sshots:
