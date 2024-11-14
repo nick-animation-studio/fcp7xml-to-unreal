@@ -192,6 +192,11 @@ class Episode:
                         self.shots.remove(this_shot)
                         continue
 
+                    if "boards" in name.lower():
+                        track.remove(clipitem)
+                        self.shots.remove(this_shot)
+                        continue
+
                     # get rid of (2) and such if there
                     newname = re.sub(r"\(.*\)", "", name)
 
