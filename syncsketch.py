@@ -32,7 +32,7 @@ def get_project_id(s):
 
 
 def get_review_id(s, project_id, syncsketch_link):
-    reviews = s.get_reviews_by_project_id(project_id)["objects"]
+    reviews = s.get_reviews_by_project_id(project_id, limit=1000)["objects"]
     syncsketch_link = syncsketch_link.replace("nick.", "www.")
     syncsketch_link = syncsketch_link.replace("#/", "/")
     for review in reviews:
@@ -72,8 +72,9 @@ def max_post_comment(s, item_id, comment, review_id, start_frame):
     # need the frame offset from the item.
     item = s.get_item(item_id)
     ff = item["first_frame"]
-    retval = s.add_comment(item_id, comment, review_id, start_frame - ff)
-    return retval
+    frame = start_frame + ff
+    print(f"Posting to frame: {frame}")
+    s.add_comment(item_id, comment, review_id, start_frame)
 
 
 def upload(episode: Episode, syncsketch_link: str):
@@ -99,7 +100,8 @@ def upload(episode: Episode, syncsketch_link: str):
         tagged = len(note.tags) > 0
         if not tagged:
             comments_missing_tag.append(note)
-        max_post_comment(s, item_id, note.text, review_id, note.sf)
+        tag_string = " ".join(str(tag) for tag in note.tags)
+        max_post_comment(s, item_id, f"{tag_string} {note.text}", review_id, note.sf)
     print("Successfully uploaded notes to syncsketch")
     if len(comments_missing_tag) > 0:
         warning = "Warning, found thefollowing comments missing tags. Please review\n"
