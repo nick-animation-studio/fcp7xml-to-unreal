@@ -166,15 +166,29 @@ class Episode:
                 audio.remove(track)
 
     def process_video(self):
+
+        MATM_prune_alert = False
+        
         for track in self.root.findall("./sequence/media/video/track"):
 
             for clipitem in track.findall("clipitem"):
 
                 name = clipitem.find("name").text
+
                 # remove disabled clips entirely
                 if clipitem.find("enabled").text == "FALSE":
                     track.remove(clipitem)
                     continue
+                
+                # remove clips that start with MATM_
+                # they are previous exports and/or boards, as of this writing
+                if name.startswith("MATM_"):
+                    if MATM_prune_alert is False:
+                        print(f"Removing all clips starting with MATM_ !")
+                        MATM_prune_alert = True
+                    track.remove(clipitem)
+                    continue
+                
                 start = clipitem.find("start").text
                 end = clipitem.find("end").text
 
@@ -262,7 +276,17 @@ class Episode:
                             for param in fx.findall("parameter"):
                                 for param_option in ["scale", "rotation"]:
                                     if param.find("parameterid").text == param_option:
-                                        params[param_option] = param.find("value").text
+                                        # check for animation
+                                        keys = ""
+                                        for key in param.findall("keyframe"):
+                                            when = key.find("when").text
+                                            val = key.find("value").text
+                                            keys += f"(f{val} @ f{when}) "
+                                        if keys != "":
+                                            params[param_option] = keys
+                                        else:
+                                            params[param_option] = param.find("value").text
+                                            
                             # some cleaning
                             if "scale" in params:
                                 if params["scale"] == "100":
@@ -357,4 +381,4 @@ class Episode:
                         comment_without_tags = " ".join(nontags)
                         self.notes.append(Note(start, end, tags, comment_without_tags))
                         count += 1
-        print(count)
+        print(f"{count} notes found in XML")
