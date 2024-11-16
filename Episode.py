@@ -336,7 +336,7 @@ class Episode:
                     in_seq = True
                     continue
             if in_seq == False:
-                self.ingest_log += f"Burnin {cshot.name} not in any sequence"
+                self.ingest_log += f"Burnin {cshot.name} not in any sequence\n"
 
         # Removed unmapped story shots
         for sshot in self.sshots:
