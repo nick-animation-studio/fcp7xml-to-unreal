@@ -18,18 +18,6 @@ class Episode:
         "8mm overlay film borders.mp4",
         "Light-flicker.mp4",
         "MT_FlameMatte_1.mov",
-        "Ep202_Sc06_For-Boards_240422.mov",
-        "Ep202_Sc03_For-Boards_240423.mov",
-        "Ep202_Sc1_Boards_240423.mov",
-        "Ep202_Sc05_For-Boards_240422.mov",
-        "Ep202_Sc04_For-Boards_240422.mov",
-        "Ep202_Sc07_From-Boards_240306_Alpha test.mov",
-        "Ep202_Sc09_For-Boards_240422.mov",
-        "Ep202_Sc010_For-Boards_240422.mov",
-        "Ep202_Sc012a_For-Boards_240422.mov",
-        "Ep202_Sc012b_For-Boards_240422.mov",
-        "Ep202_Sc012c_For-Boards_240422.mov",
-        "Ep202_Sc1_Boards_240423.mov",
         "",
     }
 
@@ -54,6 +42,8 @@ class Episode:
 
         self.seqs = []
         self.notes = []
+
+        self.ingest_log = ""
 
         video_tracks = self.root.findall("./sequence/media/video")
         for video in video_tracks:
@@ -168,7 +158,7 @@ class Episode:
     def process_video(self):
 
         MATM_prune_alert = False
-        
+
         for track in self.root.findall("./sequence/media/video/track"):
 
             for clipitem in track.findall("clipitem"):
@@ -179,7 +169,7 @@ class Episode:
                 if clipitem.find("enabled").text == "FALSE":
                     track.remove(clipitem)
                     continue
-                
+
                 # remove clips that start with MATM_
                 # they are previous exports and/or boards, as of this writing
                 if name.startswith("MATM_"):
@@ -188,7 +178,7 @@ class Episode:
                         MATM_prune_alert = True
                     track.remove(clipitem)
                     continue
-                
+
                 start = clipitem.find("start").text
                 end = clipitem.find("end").text
 
@@ -229,8 +219,9 @@ class Episode:
                     # It's not clear how to fix this automatically!
 
                     if (this_shot.ef == -1) | (this_shot.ef == -1):
-                        print(f"**** Shot {newname} has bogus start/end frames.")
-                        print("Need to fix, but for now eliminating entirely.")
+                        self.ingest_log += (
+                            f"**** Removing shot {newname}. Check for cross dissolve\n"
+                        )
                         track.remove(clipitem)
                         self.shots.remove(this_shot)
                         continue
@@ -285,8 +276,10 @@ class Episode:
                                         if keys != "":
                                             params[param_option] = keys
                                         else:
-                                            params[param_option] = param.find("value").text
-                                            
+                                            params[param_option] = param.find(
+                                                "value"
+                                            ).text
+
                             # some cleaning
                             if "scale" in params:
                                 if params["scale"] == "100":
@@ -343,7 +336,7 @@ class Episode:
                     in_seq = True
                     continue
             if in_seq == False:
-                print(f"Shot {cshot.name} not in any sequence")
+                self.ingest_log += f"Burnin {cshot.name} not in any sequence"
 
         # Removed unmapped story shots
         for sshot in self.sshots:
@@ -353,7 +346,7 @@ class Episode:
                     in_seq = True
                     continue
             if in_seq == False:
-                print(f"Shot {sshot.name} not in any sequence, removing")
+                self.ingest_log += f"Shot {sshot.name} not in any sequence, removing\n"
                 for track in self.root.findall("./sequence/media/video/track"):
                     for clipitem in track.findall("clipitem"):
                         name = clipitem.find("name").text
@@ -381,4 +374,4 @@ class Episode:
                         comment_without_tags = " ".join(nontags)
                         self.notes.append(Note(start, end, tags, comment_without_tags))
                         count += 1
-        print(f"{count} notes found in XML")
+        self.ingest_log += f"{count} notes found in XML\n"
