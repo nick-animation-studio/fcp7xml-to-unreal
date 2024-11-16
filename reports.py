@@ -78,7 +78,9 @@ def cgfixes_report(episode):
         last_ef = shot.ef
 
     for shot in episode.sshots:
-        if shot.name.split(".")[0].split("_")[-1].isdigit():
+        if shot.name.split(".")[0].split("_")[-1].isdigit() and (
+            shot.name.split(".")[0][-2] == "_"
+        ):
             output += f"{shot.name[:-4]}, likely versioned incorrectly in premiere\n"
 
     for shot in episode.sshots:
@@ -92,10 +94,10 @@ def conform_report(episode):
     # see if we can match every conformed shot to a story shot.
     # if we can't let the user know about it.
 
-    #unmatched_shots = 0
-    #cg_shots = 0
+    # unmatched_shots = 0
+    # cg_shots = 0
     output = ""
-    
+
     matched_shots = {}
     for cshot in episode.cshots:
         matched = []
@@ -103,18 +105,18 @@ def conform_report(episode):
             result = cshot.match(sshot)
             if result == "perfect":
                 matched.append(sshot)
-                #cshot.matched_shot = sshot
-        matched_shots[ cshot.name] = matched
+                # cshot.matched_shot = sshot
+        matched_shots[cshot.name] = matched
 
     # at this point, we have a dict entry for every story shot. It will have >= 0 story shots mapped to it.
     # let's go through it and flag any that have no match.
 
-    shot_names = list( matched_shots.keys())
+    shot_names = list(matched_shots.keys())
     shot_names.sort()
-    
+
     for s in shot_names:
-        if len( matched_shots[ s]) == 0:
-            output += f"Conform alert: {s} doesn't match any story shot.\n"
+        if len(matched_shots[s]) == 0:
+            output += f"Warning: {s} doesn't match any story shot.\n"
 
     # check to make sure we have consecutive scenes.
     sorted_seqs = [int(s.name[3:-4]) for s in episode.seqs]
