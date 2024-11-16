@@ -63,10 +63,11 @@ def cgfixes_report(episode):
 
     # want to sort this list by starting frame
     episode.sshots.sort(key=lambda x: x.sf)
-    output = "Scene #,Shot #,Fix Type,Text from cgfix report,Note,"
-    output += (
+    initial_output = "Scene #,Shot #,Fix Type,Text from cgfix report,Note,"
+    initial_output += (
         "Source,Vis Artist Fixing,Status,Revised Shot #,Date Finished,Delivery Note\n"
     )
+    output = initial_output
     lastshot = None
     last_ef = None
     for shot in episode.sshots:
@@ -86,6 +87,8 @@ def cgfixes_report(episode):
     for shot in episode.sshots:
         if shot.has_fx():
             output += f"{shot.name[:-4]},{shot.fx_str()}\n"
+    if output == initial_output:
+        return "No cg fixes found!"
     return output
 
 
