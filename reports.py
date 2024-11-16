@@ -74,7 +74,7 @@ def cgfixes_report(episode):
         if shot.name == lastshot:
             # check for frame parity
             if last_ef == shot.sf:
-                output += f"{shot.name[:-4]}, appears back to back\n"
+                output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,appears back to back\n"
         lastshot = shot.name
         last_ef = shot.ef
 
@@ -108,18 +108,22 @@ def conform_report(episode):
             result = cshot.match(sshot)
             if result == "perfect":
                 matched.append(sshot)
-                # cshot.matched_shot = sshot
-        matched_shots[cshot.name] = matched
+                cshot.matched_shot = sshot
+                continue
+            elif result == "close":
+                matched.append(sshot)
+                cshot.matched_shot = sshot
+            else:
+                pass
 
-    # at this point, we have a dict entry for every story shot. It will have >= 0 story shots mapped to it.
-    # let's go through it and flag any that have no match.
-
-    shot_names = list(matched_shots.keys())
-    shot_names.sort()
-
-    for s in shot_names:
-        if len(matched_shots[s]) == 0:
-            output += f"Warning: {s} doesn't match any story shot.\n"
+        if len(matched) == 0:
+            boarded_shots += 1
+        else:
+            cg_shots += 1
+            for m in matched:
+                mtype = cshot.match(m)
+                if mtype == "close":
+                    output += f"Possible conform mismatch detected:\n\t{cshot}\n\t{m}\n"
 
     # check to make sure we have consecutive scenes.
     sorted_seqs = [int(s.name[3:-4]) for s in episode.seqs]
