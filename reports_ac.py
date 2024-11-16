@@ -63,48 +63,45 @@ def cgfixes_report(episode):
 
     # want to sort this list by starting frame
     episode.sshots.sort(key=lambda x: x.sf)
-    initial_output = "Scene #,Shot #,Fix Type,Text from cgfix report,Note,"
-    initial_output += (
-        "Source,Vis Artist Fixing,Status,Revised Shot #,Date Finished,Delivery Note\n"
-    )
-    output = initial_output
+    output = ""
     lastshot = None
     last_ef = None
     for shot in episode.sshots:
         if shot.name == lastshot:
             # check for frame parity
             if last_ef == shot.sf:
-                output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,appears back to back\n"
+                output += f"{shot.name[:-4]}, appears back to back\n"
         lastshot = shot.name
         last_ef = shot.ef
 
     for shot in episode.sshots:
-        if shot.name.split(".")[0].split("_")[-1].isdigit() and (
-            shot.name.split(".")[0][-2] == "_"
-        ):
-            output += f"{shot.scene_number()}, {shot.name[:-4]}, CG Conform, likely versioned incorrectly in premiere\n"
+        if shot.name.split(".")[0].split("_")[-1].isdigit():
+            output += f"{shot.name[:-4]}, likely versioned incorrectly in premiere\n"
 
     for shot in episode.sshots:
         if shot.has_fx():
-            output += (
-                f"{shot.scene_number()},{shot.name[:-4]},CG Conform, {shot.fx_str()}\n"
-            )
-    if output == initial_output:
-        return "No cg fixes found!"
+            output += f"{shot.name[:-4]},{shot.fx_str()}\n"
     return output
 
 
 def conform_report(episode):
+    # this report should flag any odd conform boundary issues
+    # now validate. Go over each cshot looking for matches in the sshots
 
-    # see if we can match every conformed shot to a story shot.
-    # if we can't let the user know about it.
-
-    # unmatched_shots = 0
     boarded_shots = 0
     cg_shots = 0
     output = ""
 
-    matched_shots = {}
+    # map cshots to their sequences
+    for cshot in episode.cshots:
+        in_seq = False
+        for seq in episode.seqs:
+            if seq.contains(cshot):
+                in_seq = True
+                continue
+        if in_seq == False:
+            output += f"Shot {cshot.name} not in any sequence!\n"
+                
     for cshot in episode.cshots:
         matched = []
         for sshot in episode.sshots:
@@ -116,18 +113,17 @@ def conform_report(episode):
             elif result == "close":
                 matched.append(sshot)
                 cshot.matched_shot = sshot
+            else:
+                pass
 
         if len(matched) == 0:
             boarded_shots += 1
-            output += (
-                f"Warning: {cshot.name} doesn't match any story shot. Boarded only?\n"
-            )
         else:
             cg_shots += 1
             for m in matched:
                 mtype = cshot.match(m)
                 if mtype != "perfect":
-                    output += f"Possible conform mismatch detected:\n\t{cshot}\n\t{m}\n"
+                    output += f"Conform mismatch detected:\n\t{cshot}\n\t{m}\n"
 
     # check to make sure we have consecutive scenes.
     sorted_seqs = [int(s.name[3:-4]) for s in episode.seqs]
@@ -137,7 +133,7 @@ def conform_report(episode):
         for seq in sorted_seqs[1:]:
             if last_seq == seq:
                 output += f"SCENE BURNIN WARNING: scene {last_seq} burnin exists multiple times\n"
-            elif last_seq + 1 < seq:
+            elif last_seq +1 < seq:
                 output += f"SCENE BURNIN WARNING: scene burnin may be missing between {last_seq} and {seq}\n"
             last_seq = seq
 
@@ -156,7 +152,7 @@ def conform_report(episode):
         last_shot_num = int(shotlist[-1][-3:])
         if last_shot_num != len(shotlist):
             output += f"SHOT COUNT WARNING: sequence {seq.name}!\n"
-            output += f"{len(shotlist)} shots but ends on shot {last_shot_num}\n"
+            output += shotlist + "\n"
 
         # we have a sorted list of shot names. Let's go through them in order, see what their CG
         # counterpart is, and flag consecutive duplicates.
