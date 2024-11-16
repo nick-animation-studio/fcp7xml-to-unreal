@@ -65,16 +65,17 @@ class xmlUI:
 
         report_output = "Aggregate Reports - please scroll down and check all 3!\n\n"
 
-        report_output += "Conform Report\n\n"
+        report_output += "Ingest logs:\n\n"
+        report_output += self.current_episode.ingest_log
+        report_output += "\n\n"
+
+        report_output += "Conform Report:\n\n"
         report_output += conform_report(self.current_episode)
         report_output += "\n\n"
 
-        report_output += "CG Fixes Report\n\n"
+        report_output += "CG Fixes Report:\n\n"
         report_output += cgfixes_report(self.current_episode)
         report_output += "\n\n"
-
-        report_output += "Audio Report\n\n"
-        report_output += audio_report(self.current_episode)
 
         self.show_output(report_output)
 
@@ -109,7 +110,7 @@ xml_file_string.set("Please choose an XML file")
 ss_link = tk.StringVar()
 ss_link.set("If using upload, enter a syncsketch link")
 
-# xml_ui.create_button("Audio report", xml_ui.output_audio)
+xml_ui.create_button("Audio report", xml_ui.output_audio)
 # xml_ui.create_button("CG Fixes report", xml_ui.output_cgfixes)
 # xml_ui.create_button("Conform report", xml_ui.output_conform)
 xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)
