@@ -345,8 +345,12 @@ class Episode:
                 if seq.contains(sshot):
                     in_seq = True
                     continue
+            # CP: When bringing in an XML from the editors for testing, pre-conform,
+            # I found that this code was deleting shots I needed to keep.
+            # Changing it to a warning message instead.
             if in_seq == False:
-                self.ingest_log += f"Shot {sshot.name} not in any sequence, removing\n"
+                self.ingest_log += f"Shot {sshot.name} not in any sequence\n"
+                '''
                 for track in self.root.findall("./sequence/media/video/track"):
                     for clipitem in track.findall("clipitem"):
                         name = clipitem.find("name").text
@@ -354,6 +358,8 @@ class Episode:
                             track.remove(clipitem)
                 self.sshots.remove(sshot)
                 self.shots.remove(sshot)
+                '''
+    
 
     def process_notes(self):
         count = 0
