@@ -10,17 +10,6 @@ class Episode:
 
     RENDER_FILE_TYPES = {"mov"}
 
-    CLIPS_TO_IGNORE = {
-        "Max_animation_promo_may14_v4.mp4",
-        "Screen Recording 2022-08-19 at 4.35.35 PM.mp4",
-        "MATM_101_Welcome_to_Byjovia_ColdOpenWIP_220830.mp4",
-        "MATM_Main-Tilte-Placeholder_220819.mp4",
-        "8mm overlay film borders.mp4",
-        "Light-flicker.mp4",
-        "MT_FlameMatte_1.mov",
-        "",
-    }
-
     def __init__(self, xml_file):
         self.file = xml_file
         self.tree = ET.parse(xml_file)
@@ -170,15 +159,6 @@ class Episode:
                     track.remove(clipitem)
                     continue
 
-                # remove clips that start with MATM_
-                # they are previous exports and/or boards, as of this writing
-                if name.startswith("MATM_"):
-                    if MATM_prune_alert is False:
-                        print(f"Removing all clips starting with MATM_ !")
-                        MATM_prune_alert = True
-                    track.remove(clipitem)
-                    continue
-
                 start = clipitem.find("start").text
                 end = clipitem.find("end").text
 
@@ -190,17 +170,18 @@ class Episode:
 
                 if name[-3:] in self.RENDER_FILE_TYPES:
 
-                    # hard-coding some known bad mp4 names
-                    if name in self.CLIPS_TO_IGNORE:
+                    # Updated regexp is pretty robust, should not let anything bad through.
+                    # Disable the printout "NOTE" below if you fear something good is being filtered out!
+
+                    story_shot_pattern = r"[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+"
+                    valid_story_shot = re.match( story_shot_pattern, name)
+                    if valid_story_shot is None:
+                        # print(f"NOTE: ignoring input clip {name} (it does not match story shot naming conventions)")
                         track.remove(clipitem)
                         self.shots.remove(this_shot)
                         continue
 
-                    if "boards" in name.lower():
-                        track.remove(clipitem)
-                        self.shots.remove(this_shot)
-                        continue
-
+                    # print(f"After auto-pruning known things, we are forging ahead with {name} as a legit shot.")
                     # get rid of (2) and such if there
                     newname = re.sub(r"\(.*\)", "", name)
 
@@ -346,7 +327,7 @@ class Episode:
                 seq_to_assign = possible_sequences[0]
                 
             elif len(possible_sequences) > 1:
-                print(f"Found shot {cshot} that matches multiple sequences, have to do some work here.")
+                #print(f"Found shot {cshot} that matches multiple sequences, have to do some work here.")
                 # I think the right thing to do is process these at the end 
                 # but maybe we can logic it out here by using the shot number.
                 # let's make our best guesses.
@@ -354,12 +335,12 @@ class Episode:
                 possible_sequences.sort()
                 shotnum = int( cshot.name[3:-4])
                 if shotnum == 1: # first shot, so use the last sequence number
-                    print("shot numbered 1, so probably use the last sequence")
+                    #print("shot numbered 1, so probably use the last sequence")
                     seq_to_assign = possible_sequences[-1]
                 else:
-                    print("based on shot number {shotnum:d}, using the first sequence")
+                    #print("based on shot number {shotnum:d}, using the first sequence")
                     seq_to_assign = possible_sequences[0]
-                print(f"Making an educated guess to place shot {cshot} in seq {seq_to_assign}, should reality check!")
+                print(f"WARNING: Placed shot {cshot.name} in {seq_to_assign.name} but it matched {len(possible_sequences):d} sequences.")
           
             cshot.name = seq_to_assign.name[3:-4] + "_" + cshot.name[3:-4]
             cshot.seq = seq_to_assign.name
