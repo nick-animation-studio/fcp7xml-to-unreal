@@ -302,7 +302,6 @@ class Episode:
 
                     if basename[:3] in ["Sc_"]:
                         # this is a valid conform burnin shot marker
-
                         self.cshots.append(this_shot)
 
                         # rename to match the corresponding level sequence in UE
@@ -328,15 +327,42 @@ class Episode:
 
         # map cshots to their sequences
         for cshot in self.cshots:
-            in_seq = False
+
+            # look for all possible sequence matches for this shot
+            possible_sequences = []
             for seq in self.seqs:
                 if seq.contains(cshot):
-                    cshot.name = seq.name[3:-4] + "_" + cshot.name[3:-4]
-                    cshot.seq = seq.name
-                    in_seq = True
-                    continue
-            if in_seq == False:
+                    possible_sequences.append( seq)
+            
+            # Now choose one, if there is one
+            if len(possible_sequences) == 0:
                 self.ingest_log += f"Burnin {cshot.name} not in any sequence\n"
+                continue
+
+            seq_to_assign = None
+
+            if len(possible_sequences) == 1:
+                # this is the easy case
+                seq_to_assign = possible_sequences[0]
+                
+            elif len(possible_sequences) > 1:
+                print(f"Found shot {cshot} that matches multiple sequences, have to do some work here.")
+                # I think the right thing to do is process these at the end 
+                # but maybe we can logic it out here by using the shot number.
+                # let's make our best guesses.
+                # make sure the sequences are sorted
+                possible_sequences.sort()
+                shotnum = int( cshot.name[3:-4])
+                if shotnum == 1: # first shot, so use the last sequence number
+                    print("shot numbered 1, so probably use the last sequence")
+                    seq_to_assign = possible_sequences[-1]
+                else:
+                    print("based on shot number {shotnum:d}, using the first sequence")
+                    seq_to_assign = possible_sequences[0]
+                print(f"Making an educated guess to place shot {cshot} in seq {seq_to_assign}, should reality check!")
+          
+            cshot.name = seq_to_assign.name[3:-4] + "_" + cshot.name[3:-4]
+            cshot.seq = seq_to_assign.name
 
         # Removed unmapped story shots
         for sshot in self.sshots:

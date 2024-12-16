@@ -21,6 +21,9 @@ class Shot:
         print(self.ip, " ", self.op, " ", self.sf, " ", self.ef)
         return True
 
+    def __lt__(self, other):
+        return self.name < other.name
+    
     def __str__(self):
         outstr = f"{self.name:30s} {self.sf:6d} {self.ef:6d}"
         return outstr
