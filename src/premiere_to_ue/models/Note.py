@@ -1,5 +1,5 @@
 from typing import List
-from matm import Shot
+from premiere_to_ue.models import Shot
 
 
 class Note:

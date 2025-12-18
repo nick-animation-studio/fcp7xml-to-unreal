@@ -2,8 +2,8 @@ import sys
 
 import syncsketch
 
-from matm.Episode import *
-from matm.helpers import *
+from premiere_to_ue.models.Episode import *
+from premiere_to_ue.models.helpers import *
 
 
 def connect_to_syncsketch():

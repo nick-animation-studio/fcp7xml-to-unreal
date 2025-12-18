@@ -1,7 +1,7 @@
-from matm.Episode import Episode
+from premiere_to_ue.models.Episode import Episode
 
-from xml_helpers.reports import *
-from xml_helpers.syncsketch import *
+from premiere_to_ue.xml_helpers.reports import *
+from premiere_to_ue.xml_helpers.syncsketch import *
 
 import tkinter as tk
 from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, ttk

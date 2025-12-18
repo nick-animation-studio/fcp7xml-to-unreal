@@ -1,7 +1,7 @@
 import re
-from matm.Audio import AudioFile
-from matm.Note import Note
-from matm.Shot import Shot
+from premiere_to_ue.models.Audio import AudioFile
+from premiere_to_ue.models.Note import Note
+from premiere_to_ue.models.Shot import Shot
 
 import xml.etree.ElementTree as ET
 
