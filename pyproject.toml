@@ -1,0 +1,124 @@
+[project]
+name = "premiere-to-ue"
+version = "0.1.0"
+description = "Filter XML Editorial information from Adobe Premiere for import into Unreal Engine."
+authors = [
+    {name = "Chris Perry", email = "christopher.perry@nick.com"},
+    {name = "Grant Bowlds", email = "grant.bowlds@nick.com"},
+    {name = "Jason MacLeod", email = "jason.macleod@nick.com"},
+]
+dependencies = [
+    "common_utils>=2.0.1.dev1",
+    "tqdm>=4.66.4",
+    "syncsketch==1.0.10",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = "MIT"
+
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 4 - Beta",
+
+  "Environment :: Console",
+
+  "Framework :: Hatch",
+  "Framework :: Pytest",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: End Users/Desktop",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+
+  "Topic :: Artistic Software",
+  "Topic :: Multimedia :: Graphics",
+  "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://viacomcbs.github.io/premiere-to-ue/"
+#Documentation = "https://readthedocs.org"
+Repository = "https://github.com/viacomcbs/premiere-to-ue.git"
+Issues = "https://github.com/viacomcbs/premiere-to-ue"
+Changelog = "https://github.com/viacomcbs/premiere-to-ue/blob/main/CHANGELOG.md"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/premiere_to_ue"]
+
+[project.optional-dependencies]
+dev = [
+    "bandit>=1.8.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.5.0",
+    "pylint>=3.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-html>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+    "safety>=3.2.9",
+]
+docs = [
+    "genbadge[all]>=1.0.0",
+    "mkdocs>=1.6.0",
+]
+
+[project.scripts]
+premiere-to-ue = "premiere_to_ue.xml_ui:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q"
+markers = [
+    "integration: marks tests as integration tests",
+]
+
+[tool.mypy]
+python_version = "3.9"
+plugins = []
+ignore_missing_imports = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
+
+# Skip line too long warning (`E501`).
+extend-ignore = ["E501"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".env"]
