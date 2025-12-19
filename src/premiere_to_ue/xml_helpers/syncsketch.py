@@ -1,4 +1,6 @@
-import sys
+import os
+
+from dotenv import load_dotenv
 
 import syncsketch
 
@@ -8,17 +10,18 @@ from premiere_to_ue.models.helpers import *
 
 def connect_to_syncsketch():
 
-    if sys.platform == "win32":
-        sys.path.append(r"O:\Tools\nasutilities")
-    elif sys.platform == "darwin":
-        sys.path.append(r"/Volumes/anim/Tools/nasutilities")
+    load_dotenv()
+    SYNCSKETCH_USERNAME = os.getenv['SYNCSKETCH_USERNAME']
+    SYNCSKETCH_API_KEY = os.getenv['SYNCSKETCH_API_KEY']
 
-    import common_utils
+    if not SYNCSKETCH_USERNAME or not SYNCSKETCH_API_KEY:
+        print(f"ERROR: syncsketch .env file not configured properly, missing values.")
+        return
+    else:
+        print(f"INFO: using SYNCSKETCH_USERNAME: {SYNCSKETCH_USERNAME}")
+        print(f"INFO: using SYNCSKETCH_API_KEY: {SYNCSKETCH_API_KEY}")
 
-    username = "ChrisPerryTools"
-    api_key = common_utils.getKeyPublic("ss_max_public.cfg", username)
-
-    s = syncsketch.SyncSketchAPI(username, api_key)
+    s = syncsketch.SyncSketchAPI(SYNCSKETCH_USERNAME, SYNCSKETCH_API_KEY)
 
     return s
 
