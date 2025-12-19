@@ -6,7 +6,7 @@ from premiere_to_ue import __version__
 
 import tkinter as tk
 from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, ttk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 
 class xmlUI:
@@ -60,29 +60,36 @@ class xmlUI:
         self.xml_functions.append(button)
 
     def xml_to_episode(self):
-        xml = filedialog.askopenfilename(
+        xml_path = filedialog.askopenfilename(
             title="Choose XML to use", filetypes=[("XMLs", "*.xml")]
         )
-        self.xml_file_string.set(xml)
-        self.current_episode = Episode(xml)
-        for button in self.xml_functions:
-            button.config(state=NORMAL)
+        if not xml_path:
+            messagebox.showinfo("Info", "No XML file selected.")
+            return
+    
+        try:
+            self.xml_file_string.set(xml_path)
+            self.current_episode = Episode(xml_path)
+            for button in self.xml_functions:
+                button.config(state=NORMAL)
 
-        report_output = "Aggregate Reports - please scroll down and check all 3!\n\n"
+            report_output = "Aggregate Reports - please scroll down and check all 3!\n\n"
 
-        report_output += "Ingest logs:\n\n"
-        report_output += self.current_episode.ingest_log
-        report_output += "\n\n"
+            report_output += "Ingest logs:\n\n"
+            report_output += self.current_episode.ingest_log
+            report_output += "\n\n"
 
-        report_output += "Conform Report:\n\n"
-        report_output += conform_report(self.current_episode)
-        report_output += "\n\n"
+            report_output += "Conform Report:\n\n"
+            report_output += conform_report(self.current_episode)
+            report_output += "\n\n"
 
-        report_output += "CG Fixes Report:\n\n"
-        report_output += cgfixes_report(self.current_episode)
-        report_output += "\n\n"
+            report_output += "CG Fixes Report:\n\n"
+            report_output += cgfixes_report(self.current_episode)
+            report_output += "\n\n"
 
-        self.show_output(report_output)
+            self.show_output(report_output)
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not process XML file:\n{e}")
 
     def show_output(self, output):
 
