@@ -1,5 +1,6 @@
-from premiere_to_ue.models.helpers import *
 from urllib.parse import unquote
+
+from premiere_to_ue.models.helpers import frames_to_tc
 
 
 class AudioFile:

@@ -1,13 +1,12 @@
 import re
+import xml.etree.ElementTree as ET
+
 from premiere_to_ue.models.Audio import AudioFile
 from premiere_to_ue.models.Note import Note
 from premiere_to_ue.models.Shot import Shot
 
-import xml.etree.ElementTree as ET
-
 
 class Episode:
-
     RENDER_FILE_TYPES = {"mov"}
 
     def __init__(self, xml_file):
@@ -74,7 +73,6 @@ class Episode:
         important_tags = ["clipitem", "transitionitem"]
 
         for audio in self.root.findall("./sequence/media/audio"):
-
             for track in audio.findall("track"):
                 if "MZ.TrackName" in track.attrib:
                     track_name = track.attrib["MZ.TrackName"]
@@ -92,7 +90,6 @@ class Episode:
 
                 # second pass: go through the clipitems and patch up start/end frames
                 for index, thing in enumerate(track_contents):
-
                     if thing.tag == "transitionitem":
                         continue
 
@@ -145,13 +142,10 @@ class Episode:
                 audio.remove(track)
 
     def process_video(self):
-
         MATM_prune_alert = False
 
         for track in self.root.findall("./sequence/media/video/track"):
-
             for clipitem in track.findall("clipitem"):
-
                 name = clipitem.find("name").text
 
                 # remove disabled clips entirely
@@ -169,12 +163,11 @@ class Episode:
                 self.shots.append(this_shot)
 
                 if name[-3:] in self.RENDER_FILE_TYPES:
-
                     # Updated regexp is pretty robust, should not let anything bad through.
                     # Disable the printout "NOTE" below if you fear something good is being filtered out!
 
                     story_shot_pattern = r"[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+"
-                    valid_story_shot = re.match( story_shot_pattern, name)
+                    valid_story_shot = re.match(story_shot_pattern, name)
                     if valid_story_shot is None:
                         # print(f"NOTE: ignoring input clip {name} (it does not match story shot naming conventions)")
                         track.remove(clipitem)
@@ -211,7 +204,6 @@ class Episode:
 
                     # check for premiere filters that necessiate fixes in 3D
                     for fx in clipitem.findall("filter/effect"):
-
                         fx_type = fx.find("effectid").text
 
                         if fx_type == "timeremap":
@@ -274,7 +266,6 @@ class Episode:
                             self.fx_shots.append(this_shot)
 
                 elif name[-3:] == "png":
-
                     basename = name[:-4]
 
                     # set timebase to 24fps
@@ -308,13 +299,12 @@ class Episode:
 
         # map cshots to their sequences
         for cshot in self.cshots:
-
             # look for all possible sequence matches for this shot
             possible_sequences = []
             for seq in self.seqs:
                 if seq.contains(cshot):
-                    possible_sequences.append( seq)
-            
+                    possible_sequences.append(seq)
+
             # Now choose one, if there is one
             if len(possible_sequences) == 0:
                 self.ingest_log += f"Burnin {cshot.name} not in any sequence\n"
@@ -325,23 +315,25 @@ class Episode:
             if len(possible_sequences) == 1:
                 # this is the easy case
                 seq_to_assign = possible_sequences[0]
-                
+
             elif len(possible_sequences) > 1:
-                #print(f"Found shot {cshot} that matches multiple sequences, have to do some work here.")
-                # I think the right thing to do is process these at the end 
+                # print(f"Found shot {cshot} that matches multiple sequences, have to do some work here.")
+                # I think the right thing to do is process these at the end
                 # but maybe we can logic it out here by using the shot number.
                 # let's make our best guesses.
                 # make sure the sequences are sorted
                 possible_sequences.sort()
-                shotnum = int( cshot.name[3:-4])
-                if shotnum == 1: # first shot, so use the last sequence number
-                    #print("shot numbered 1, so probably use the last sequence")
+                shotnum = int(cshot.name[3:-4])
+                if shotnum == 1:  # first shot, so use the last sequence number
+                    # print("shot numbered 1, so probably use the last sequence")
                     seq_to_assign = possible_sequences[-1]
                 else:
-                    #print("based on shot number {shotnum:d}, using the first sequence")
+                    # print("based on shot number {shotnum:d}, using the first sequence")
                     seq_to_assign = possible_sequences[0]
-                print(f"WARNING: Placed shot {cshot.name} in {seq_to_assign.name} but it matched {len(possible_sequences):d} sequences.")
-          
+                print(
+                    f"WARNING: Placed shot {cshot.name} in {seq_to_assign.name} but it matched {len(possible_sequences):d} sequences."
+                )
+
             cshot.name = seq_to_assign.name[3:-4] + "_" + cshot.name[3:-4]
             cshot.seq = seq_to_assign.name
 
@@ -357,7 +349,7 @@ class Episode:
             # Changing it to a warning message instead.
             if in_seq == False:
                 self.ingest_log += f"Shot {sshot.name} not in any sequence\n"
-                '''
+                """
                 for track in self.root.findall("./sequence/media/video/track"):
                     for clipitem in track.findall("clipitem"):
                         name = clipitem.find("name").text
@@ -365,8 +357,7 @@ class Episode:
                             track.remove(clipitem)
                 self.sshots.remove(sshot)
                 self.shots.remove(sshot)
-                '''
-    
+                """
 
     def process_notes(self):
         count = 0
