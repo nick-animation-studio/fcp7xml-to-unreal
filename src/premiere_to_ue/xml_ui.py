@@ -1,16 +1,26 @@
-from premiere_to_ue.models.Episode import Episode
-
-from premiere_to_ue.xml_helpers.reports import *
-from premiere_to_ue.xml_helpers.syncsketch import *
-from premiere_to_ue import __version__
-
 import tkinter as tk
-from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, ttk
-from tkinter import filedialog, messagebox
+from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, filedialog, messagebox, ttk
+
+from premiere_to_ue import __version__
+from premiere_to_ue.models.Episode import Episode
+from premiere_to_ue.xml_helpers.reports import (
+    audio_report,
+    cgfixes_report,
+    conform_report,
+)
+from premiere_to_ue.xml_helpers.syncsketch import get_name, upload
 
 
 class xmlUI:
-    def __init__(self, root=None, ss_link=None, frm=None, xml_file_string="", episode=None, xml_functions=[]):
+    def __init__(
+        self,
+        root=None,
+        ss_link=None,
+        frm=None,
+        xml_file_string="",
+        episode=None,
+        xml_functions=[],
+    ):
         self.root = root
         self.ss_link = ss_link
         self.frm = frm
@@ -66,14 +76,16 @@ class xmlUI:
         if not xml_path:
             messagebox.showinfo("Info", "No XML file selected.")
             return
-    
+
         try:
             self.xml_file_string.set(xml_path)
             self.current_episode = Episode(xml_path)
             for button in self.xml_functions:
                 button.config(state=NORMAL)
 
-            report_output = "Aggregate Reports - please scroll down and check all 3!\n\n"
+            report_output = (
+                "Aggregate Reports - please scroll down and check all 3!\n\n"
+            )
 
             report_output += "Ingest logs:\n\n"
             report_output += self.current_episode.ingest_log
@@ -92,7 +104,6 @@ class xmlUI:
             messagebox.showerror("Error", f"Could not process XML file:\n{e}")
 
     def show_output(self, output):
-
         if len(output) == 0:
             output = "No errors found!"
         new_window = Toplevel(self.root)
@@ -107,9 +118,8 @@ class xmlUI:
         scroll.config(command=msg.yview)
         msg.pack(side="top", fill="both", expand="True")
 
-def main():
-    
 
+def main():
     root = tk.Tk()
     root.resizable(True, True)
     root.title(f"Premiere to UE XML utility v{__version__}")
@@ -143,6 +153,7 @@ def main():
     )
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()

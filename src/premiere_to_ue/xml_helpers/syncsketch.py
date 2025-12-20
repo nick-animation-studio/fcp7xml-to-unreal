@@ -1,21 +1,18 @@
 import os
 
+import syncsketch
 from dotenv import load_dotenv
 
-import syncsketch
-
-from premiere_to_ue.models.Episode import *
-from premiere_to_ue.models.helpers import *
+from premiere_to_ue.models.Episode import Episode
 
 
 def connect_to_syncsketch():
-
     load_dotenv()
-    SYNCSKETCH_USERNAME = os.getenv['SYNCSKETCH_USERNAME']
-    SYNCSKETCH_API_KEY = os.getenv['SYNCSKETCH_API_KEY']
+    SYNCSKETCH_USERNAME = os.getenv["SYNCSKETCH_USERNAME"]
+    SYNCSKETCH_API_KEY = os.getenv["SYNCSKETCH_API_KEY"]
 
     if not SYNCSKETCH_USERNAME or not SYNCSKETCH_API_KEY:
-        print(f"ERROR: syncsketch .env file not configured properly, missing values.")
+        print("ERROR: syncsketch .env file not configured properly, missing values.")
         return
     else:
         print(f"INFO: using SYNCSKETCH_USERNAME: {SYNCSKETCH_USERNAME}")
@@ -29,7 +26,7 @@ def connect_to_syncsketch():
 def get_project_id(s):
     projects = s.get_projects()["objects"]
     if len(projects) != 1:
-        print(f"ERROR: there is not exactly one project associated with this account")
+        print("ERROR: there is not exactly one project associated with this account")
         return None
     return projects[0]["id"]
 
@@ -41,7 +38,7 @@ def get_review_id(s, project_id, syncsketch_link):
     for review in reviews:
         if review["reviewURL"] in syncsketch_link:
             return review["id"]
-    print(f"ERROR: can't find a review matching the URL provided")
+    print("ERROR: can't find a review matching the URL provided")
     return None
 
 
@@ -50,7 +47,7 @@ def get_item_id(s, review_id, syncsketch_link):
     for item in items:
         if str(item["id"]) in syncsketch_link:
             return item["id"]
-    print(f"ERROR: can't find an item matching the URL provided")
+    print("ERROR: can't find an item matching the URL provided")
     return None
 
 
