@@ -84,6 +84,10 @@ SYNCSKETCH_API_KEY=my-syncsketch-api-key
 
 Contributions to improve this utility are welcome! Please submit [issues](https://github.com/viacomcbs/premiere-to-ue/issues) and [pull requests](https://github.com/viacomcbs/premiere-to-ue/pulls) on GitHub.
 
+### Tests
+
+See [TESTS.md](./TESTS.md) for details on running this product's tests.
+
 ## License
 
 This code is MIT licensed. See the [LICENSE](LICENSE) file for details.
