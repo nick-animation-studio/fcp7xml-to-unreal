@@ -8,8 +8,8 @@ from premiere_to_ue.models.Episode import Episode
 
 def connect_to_syncsketch():
     load_dotenv()
-    SYNCSKETCH_USERNAME = os.getenv["SYNCSKETCH_USERNAME"]
-    SYNCSKETCH_API_KEY = os.getenv["SYNCSKETCH_API_KEY"]
+    SYNCSKETCH_USERNAME = os.getenv("SYNCSKETCH_USERNAME")
+    SYNCSKETCH_API_KEY = os.getenv("SYNCSKETCH_API_KEY")
 
     if not SYNCSKETCH_USERNAME or not SYNCSKETCH_API_KEY:
         print("ERROR: syncsketch .env file not configured properly, missing values.")
@@ -55,6 +55,10 @@ def get_name(syncsketch_link):
     s = connect_to_syncsketch()
     if s:
         print("Successfully connected to syncsketch")
+    else:
+        print("ERROR: could not connect to syncsketch, check console for errors.")
+        return
+
     project_id = get_project_id(s)
     if project_id is None:
         return
@@ -83,6 +87,10 @@ def upload(episode: Episode, syncsketch_link: str):
     s = connect_to_syncsketch()
     if s:
         print("Successfully connected to syncsketch")
+    else:
+        print("ERROR: could not connect to syncsketch, check console for errors.")
+        return
+
     project_id = get_project_id(s)
     if project_id is None:
         return
@@ -104,7 +112,7 @@ def upload(episode: Episode, syncsketch_link: str):
         max_post_comment(s, item_id, f"{tag_string} {note.text}", review_id, note.sf)
     print("Successfully uploaded notes to syncsketch")
     if len(comments_missing_tag) > 0:
-        warning = "Warning, found thefollowing comments missing tags. Please review\n"
+        warning = "Warning, found the following comments missing tags. Please review\n"
         for note in comments_missing_tag:
             warning += f"Start frame: {note.sf} {note.text[0:10]} ...\n"
         return warning

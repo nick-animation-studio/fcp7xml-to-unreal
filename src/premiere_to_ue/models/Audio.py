@@ -2,6 +2,8 @@ from urllib.parse import unquote
 
 from premiere_to_ue.models.helpers import frames_to_tc
 
+from premiere_to_ue import config
+
 
 class AudioFile:
     OUTPUT_VALS = [
@@ -41,13 +43,12 @@ class AudioFile:
         self.shotlist = []
 
         self.label = None
-        if self.trackcolor == "Yellow":
-            self.label = "From Viacom Library"
-        if self.trackcolor == "Brown":
-            if self.is_dialogue():
-                self.label = "Scratch VO"
-            else:
-                self.label = "Unlicensed Material"
+
+        # 2025-12-22 macleodj-paramount simplify is_dialogue() check to label colors only
+        if self.trackcolor.lower() in config["audio"]["track_colors"]:
+            self.label = config["audio"]["track_colors"][self.trackcolor.lower()]
+        else:
+            self.label = config["audio"]["track_color_nomatch_label"]
 
         # if _ef is -1, we can grab in and out, subtract in from out, add to sf to get ef
 
@@ -59,15 +60,15 @@ class AudioFile:
         # print( f"Creating AudioFile named {self.filename}")
 
     def is_music(self):
-        return self.trackname.startswith("Music")
+        return self.trackname.startswith(config["audio"]["music_track_prefix"])
 
     def is_sfx(self):
-        return self.trackname.startswith("SFX")
+        return self.trackname.startswith(config["audio"]["sfx_track_prefix"])
 
     def is_dialogue(self):
-        sfx_or_music = (self.trackname.startswith("SFX")) | (
-            self.trackname.startswith("Music")
-        )
+        sfx_or_music = (
+            self.trackname.startswith(config["audio"]["sfx_track_prefix"])
+        ) | (self.trackname.startswith(config["audio"]["music_track_prefix"]))
         return not sfx_or_music
 
     def to_list(self):

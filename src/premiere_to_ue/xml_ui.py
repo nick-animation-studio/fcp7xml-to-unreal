@@ -43,22 +43,28 @@ class xmlUI:
         self.show_output(self.current_episode.write_filtered())
 
     def confirm_upload(self):
-        new_window = Toplevel(self.root)
-        new_window.resizable(True, True)
-        new_window.title("Confirm Upload")
-
-        xml_name = self.current_episode.file.rsplit("/", 1)[1]
         syncsketch_name = get_name(self.ss_link.get())
+        if syncsketch_name:
+            new_window = Toplevel(self.root)
+            new_window.resizable(True, True)
+            new_window.title("Confirm Upload")
 
-        frm = ttk.Frame(new_window, padding=10)
-        frm.grid()
+            xml_name = self.current_episode.file.rsplit("/", 1)[1]
 
-        ttk.Label(frm, text=f"Upload notes from {xml_name} to {syncsketch_name}?").grid(
-            column=0, row=0
-        )
-        ttk.Button(frm, text="Confirm", command=self.output_syncsketch).grid(
-            column=0, row=1
-        )
+            frm = ttk.Frame(new_window, padding=10)
+            frm.grid()
+
+            ttk.Label(
+                frm, text=f"Upload notes from {xml_name} to {syncsketch_name}?"
+            ).grid(column=0, row=0)
+            ttk.Button(frm, text="Confirm", command=self.output_syncsketch).grid(
+                column=0, row=1
+            )
+        else:
+            messagebox.showerror(
+                "Error",
+                "Could not get item name from SyncSketch, see console for errors.",
+            )
 
     def output_syncsketch(self):
         self.show_output(upload(self.current_episode, self.ss_link.get()))

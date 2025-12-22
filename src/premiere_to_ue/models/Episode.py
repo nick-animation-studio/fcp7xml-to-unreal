@@ -5,6 +5,8 @@ from premiere_to_ue.models.Audio import AudioFile
 from premiere_to_ue.models.Note import Note
 from premiere_to_ue.models.Shot import Shot
 
+from premiere_to_ue import config
+
 
 class Episode:
     RENDER_FILE_TYPES = {"mov"}
@@ -142,8 +144,6 @@ class Episode:
                 audio.remove(track)
 
     def process_video(self):
-        MATM_prune_alert = False
-
         for track in self.root.findall("./sequence/media/video/track"):
             for clipitem in track.findall("clipitem"):
                 name = clipitem.find("name").text
@@ -166,7 +166,7 @@ class Episode:
                     # Updated regexp is pretty robust, should not let anything bad through.
                     # Disable the printout "NOTE" below if you fear something good is being filtered out!
 
-                    story_shot_pattern = r"[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+"
+                    story_shot_pattern = config["shot_name_regex"]
                     valid_story_shot = re.match(story_shot_pattern, name)
                     if valid_story_shot is None:
                         # print(f"NOTE: ignoring input clip {name} (it does not match story shot naming conventions)")
