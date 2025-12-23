@@ -6,4 +6,4 @@ audio:
     yellow: "From Audio Library"
   track_color_nomatch_label: "Temp Material"
 
-shot_name_regex: r"[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+"
+shot_name_regex: '[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+'
