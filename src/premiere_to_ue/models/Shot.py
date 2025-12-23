@@ -1,5 +1,7 @@
-class Shot:
+from premiere_to_ue import logger
 
+
+class Shot:
     def __init__(self, name, sf, ef, ip, op):
         self.name = name
         self.sf = int(sf)
@@ -16,14 +18,14 @@ class Shot:
 
     def scene_number(self):
         return self.name.split("_")[1]
-    
+
     def is_valid(self):
-        print(self.ip, " ", self.op, " ", self.sf, " ", self.ef)
+        logger.info(f"shot: {self.ip} {self.op} {self.sf} {self.ef}")
         return True
 
     def __lt__(self, other):
         return self.name < other.name
-    
+
     def __str__(self):
         outstr = f"{self.name:30s} {self.sf:6d} {self.ef:6d}"
         return outstr
@@ -33,19 +35,20 @@ class Shot:
         for k in self.fx:
             outstr += f" FX: {k}"
             for param in self.fx[k]:
-                outstr += f" {param} {self.fx[ k][ param]}"
+                outstr += f" {param} {self.fx[k][param]}"
         return outstr
 
     def match(self, s):
-
         # Logic is this:
         # If both start and end frames match, it's "perfect"
         # If the above isn't true, and both start and end are within 2, it's "close"
         # Otherwise it's not a match (None)
-        
+
         if (self.sf == s.sf) & (self.ef == s.ef):
             return "perfect"
-        elif (self.ef in range(s.ef - 2, s.ef + 2)) & (self.sf in range(s.sf - 2, s.sf + 2)):
+        elif (self.ef in range(s.ef - 2, s.ef + 2)) & (
+            self.sf in range(s.sf - 2, s.sf + 2)
+        ):
             return "close"
         else:
             return None

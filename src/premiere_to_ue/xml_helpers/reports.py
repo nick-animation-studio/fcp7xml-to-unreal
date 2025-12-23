@@ -95,7 +95,6 @@ def cgfixes_report(episode):
 
 
 def conform_report(episode):
-
     # see if we can match every conformed shot to a story shot.
     # if we can't let the user know about it.
 
@@ -152,7 +151,7 @@ def conform_report(episode):
                 if len(cshot.name) == 6:
                     shotlist.append(cshot.name)
         shotlist.sort()
-        
+
         last_shot_num = int(shotlist[-1][-3:])
         if last_shot_num != len(shotlist):
             output += f"SHOT COUNT WARNING: sequence {seq.name}!\n"

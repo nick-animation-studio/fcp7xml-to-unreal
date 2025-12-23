@@ -1,0 +1,9 @@
+audio:
+  music_track_prefix: "Music"
+  sfx_track_prefix: "SFX"
+  track_colors:
+    brown: "Scratch VO"
+    yellow: "From Audio Library"
+  track_color_nomatch_label: "Temp Material"
+
+shot_name_regex: '[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+'

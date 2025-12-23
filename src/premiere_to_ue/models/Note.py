@@ -1,9 +1,7 @@
 from typing import List
-from premiere_to_ue.models import Shot
 
 
 class Note:
-
     def __init__(
         self,
         sf: int = None,
