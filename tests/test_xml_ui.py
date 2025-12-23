@@ -1,7 +1,5 @@
 import types
 
-import pytest
-
 from premiere_to_ue import xml_ui as xu
 
 

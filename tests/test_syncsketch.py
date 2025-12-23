@@ -1,7 +1,3 @@
-import os
-
-import pytest
-
 from premiere_to_ue.models.Note import Note
 from premiere_to_ue.xml_helpers import syncsketch as ss_mod
 
@@ -28,15 +24,14 @@ class FakeAPI:
         self._last_added = (item_id, comment, review_id, start_frame)
 
 
-def test_connect_to_syncsketch_no_env(monkeypatch, capsys):
+def test_connect_to_syncsketch_no_env(monkeypatch, caplog):
     # Ensure env vars absent
     monkeypatch.delenv("SYNCSKETCH_USERNAME", raising=False)
     monkeypatch.delenv("SYNCSKETCH_API_KEY", raising=False)
 
     res = ss_mod.connect_to_syncsketch()
-    captured = capsys.readouterr()
     assert res is None
-    assert "missing values" in captured.out
+    assert "missing values" in caplog.text
 
 
 def test_connect_to_syncsketch_success(monkeypatch):

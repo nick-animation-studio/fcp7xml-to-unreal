@@ -1,5 +1,3 @@
-import pytest
-
 from premiere_to_ue.models.Shot import Shot
 
 

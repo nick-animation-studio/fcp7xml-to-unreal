@@ -1,5 +1,3 @@
-import pytest
-
 from premiere_to_ue.models import helpers
 
 
@@ -12,11 +10,10 @@ def test_tc_to_frames_valid():
     assert helpers.tc_to_frames("00:01:00:00") == 24 * 60
 
 
-def test_tc_to_frames_invalid_values(capsys):
+def test_tc_to_frames_invalid_values(caplog):
     # invalid frames (>23)
     assert helpers.tc_to_frames("00:00:00:24") == -1
-    captured = capsys.readouterr()
-    assert "Timecode error" in captured.out
+    assert "Timecode error" in caplog.text
 
     # invalid seconds
     assert helpers.tc_to_frames("00:00:60:00") == -1

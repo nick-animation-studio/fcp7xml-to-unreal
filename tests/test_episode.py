@@ -1,7 +1,3 @@
-import os
-
-import pytest
-
 from premiere_to_ue.models.Episode import Episode
 from premiere_to_ue.models.Note import Note
 
