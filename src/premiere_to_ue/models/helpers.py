@@ -1,3 +1,6 @@
+from premiere_to_ue import logger
+
+
 def tc_to_frames(tc="00:59:50:00"):
     # tc is in the following format:
     # HH:MM:SS:FF
@@ -5,13 +8,13 @@ def tc_to_frames(tc="00:59:50:00"):
     (hours, minutes, seconds, frames) = [int(c) for c in tc.split(":", 3)]
 
     if (frames < 0) | (frames > 23):
-        print("Timecode error: illegal frame value in {tc}")
+        logger.error(f"Timecode error: illegal frame value in {tc}")
         return -1
     if (seconds < 0) | (seconds > 59):
-        print("Timecode error: illegal seconds value in {tc}")
+        logger.error(f"Timecode error: illegal seconds value in {tc}")
         return -1
     if (minutes < 0) | (minutes > 59):
-        print("Timecode error: illegal minutes value in {tc}")
+        logger.error(f"Timecode error: illegal minutes value in {tc}")
         return -1
 
     return frames + 24 * seconds + 24 * 60 * minutes + 24 * 60 * 60 * hours

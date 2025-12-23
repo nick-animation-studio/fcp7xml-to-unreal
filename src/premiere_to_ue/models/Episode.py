@@ -1,11 +1,10 @@
 import re
 import xml.etree.ElementTree as ET
 
+from premiere_to_ue import config, logger
 from premiere_to_ue.models.Audio import AudioFile
 from premiere_to_ue.models.Note import Note
 from premiere_to_ue.models.Shot import Shot
-
-from premiere_to_ue import config
 
 
 class Episode:
@@ -61,7 +60,7 @@ class Episode:
             output += str(shot) + "\n"
         outfile = self.file[:-4] + "_filtered" + ".xml"
         self.tree.write(outfile)
-        print(f"Wrote filtered xml to file: {outfile}")
+        logger.info(f"Wrote filtered xml to file: {outfile}")
         return output
 
     def process_audio(self):
@@ -167,6 +166,9 @@ class Episode:
                     # Disable the printout "NOTE" below if you fear something good is being filtered out!
 
                     story_shot_pattern = config["shot_name_regex"]
+                    logger.debug(
+                        f"Checking shot {name} against regex {story_shot_pattern}"
+                    )
                     valid_story_shot = re.match(story_shot_pattern, name)
                     if valid_story_shot is None:
                         # print(f"NOTE: ignoring input clip {name} (it does not match story shot naming conventions)")
@@ -330,8 +332,8 @@ class Episode:
                 else:
                     # print("based on shot number {shotnum:d}, using the first sequence")
                     seq_to_assign = possible_sequences[0]
-                print(
-                    f"WARNING: Placed shot {cshot.name} in {seq_to_assign.name} but it matched {len(possible_sequences):d} sequences."
+                logger.warning(
+                    f"Placed shot {cshot.name} in {seq_to_assign.name} but it matched {len(possible_sequences):d} sequences."
                 )
 
             cshot.name = seq_to_assign.name[3:-4] + "_" + cshot.name[3:-4]

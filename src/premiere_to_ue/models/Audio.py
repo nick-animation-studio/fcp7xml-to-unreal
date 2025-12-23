@@ -1,8 +1,7 @@
 from urllib.parse import unquote
 
+from premiere_to_ue import config, logger
 from premiere_to_ue.models.helpers import frames_to_tc
-
-from premiere_to_ue import config
 
 
 class AudioFile:
@@ -57,7 +56,9 @@ class AudioFile:
         else:
             self.badTC = False
 
-        # print( f"Creating AudioFile named {self.filename}")
+        logger.debug(
+            f"Processing AudioFile entry for file reference named {self.filename}"
+        )
 
     def is_music(self):
         return self.trackname.startswith(config["audio"]["music_track_prefix"])

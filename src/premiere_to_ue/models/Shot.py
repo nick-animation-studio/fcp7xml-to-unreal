@@ -1,3 +1,6 @@
+from premiere_to_ue import logger
+
+
 class Shot:
     def __init__(self, name, sf, ef, ip, op):
         self.name = name
@@ -17,7 +20,7 @@ class Shot:
         return self.name.split("_")[1]
 
     def is_valid(self):
-        print(self.ip, " ", self.op, " ", self.sf, " ", self.ef)
+        logger.info(f"shot: {self.ip} {self.op} {self.sf} {self.ef}")
         return True
 
     def __lt__(self, other):
