@@ -59,10 +59,7 @@ class Shot:
 
     # return true if this shot overlaps any of the frame range given
     def overlaps(self, sf, ef):
-        if (ef < self.sf) | (sf > self.ef):
-            return False
-        else:
-            return True
+        return not (ef < self.sf) | (sf > self.ef)
 
     def add_fx(self, fx_name, fx_val_dict):
         add_it = True

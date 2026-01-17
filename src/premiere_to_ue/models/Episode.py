@@ -98,11 +98,10 @@ class Episode:
                     name = thing.find("name").text
                     masterclipid = thing.find("masterclipid").text
                     pathurl = thing.find("./file/pathurl")
-                    if pathurl is not None:
-                        # remove the leading "file://localhost" URL stuff
-                        path = pathurl.text[16:]
-                    else:
-                        path = ""
+
+                    # remove the leading "file://localhost" URL stuff
+                    path = pathurl.text[16:] if pathurl is not None else ""
+
                     start_frame = int(thing.find("start").text)
                     end_frame = int(thing.find("end").text)
                     for ls in thing.findall("labels"):
@@ -256,12 +255,10 @@ class Episode:
                                             ).text
 
                             # some cleaning
-                            if "scale" in params:
-                                if params["scale"] == "100":
-                                    params.pop("scale")
-                            if "rotation" in params:
-                                if params["rotation"] == "0":
-                                    params.pop("rotation")
+                            if "scale" in params and ["scale"] == "100":
+                                params.pop("scale")
+                            if "rotation" in params and params["rotation"] == "0":
+                                params.pop("rotation")
                             this_shot.add_fx(fx_type, params)
 
                         if len(this_shot.fx.keys()) > 0:
@@ -349,7 +346,7 @@ class Episode:
             # CP: When bringing in an XML from the editors for testing, pre-conform,
             # I found that this code was deleting shots I needed to keep.
             # Changing it to a warning message instead.
-            if in_seq == False:
+            if not in_seq:
                 self.ingest_log += f"Shot {sshot.name} not in any sequence\n"
                 """
                 for track in self.root.findall("./sequence/media/video/track"):

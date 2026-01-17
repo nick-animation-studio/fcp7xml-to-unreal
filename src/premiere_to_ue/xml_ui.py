@@ -19,8 +19,10 @@ class xmlUI:
         frm=None,
         xml_file_string="",
         episode=None,
-        xml_functions=[],
+        xml_functions=None,
     ):
+        if xml_functions is None:
+            xml_functions = []
         self.root = root
         self.ss_link = ss_link
         self.frm = frm
@@ -146,7 +148,7 @@ def main():
     xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)
     xml_ui.create_button("Upload notes to syncsketch", xml_ui.confirm_upload)
 
-    xml_textbox = tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
+    tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
         column=0, row=0, sticky="news", columnspan=len(xml_ui.xml_functions) - 1
     )
 
@@ -154,7 +156,7 @@ def main():
         column=len(xml_ui.xml_functions) - 1, row=0
     )
 
-    syncsketch_textbox = tk.Entry(frm, textvariable=ss_link, width=100).grid(
+    tk.Entry(frm, textvariable=ss_link, width=100).grid(
         column=0, row=1, sticky="news", columnspan=len(xml_ui.xml_functions) - 1
     )
 

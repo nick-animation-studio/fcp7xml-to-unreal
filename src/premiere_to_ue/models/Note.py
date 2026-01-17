@@ -1,14 +1,13 @@
-from typing import List
-
-
 class Note:
     def __init__(
         self,
         sf: int = None,
         ef: int = None,
-        tags: List[str] = [],
+        tags: list[str] = None,
         text: str = "",
     ):
+        if tags is None:
+            tags = []
         self.sf = int(sf)
         self.ef = int(ef)
         self.tags = tags

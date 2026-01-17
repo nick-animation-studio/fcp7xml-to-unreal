@@ -3,6 +3,7 @@
 import importlib.metadata
 import logging
 import os
+
 import yaml
 
 __version__ = importlib.metadata.version(__package__)

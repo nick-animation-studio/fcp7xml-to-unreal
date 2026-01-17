@@ -1,6 +1,6 @@
 [project]
 name = "premiere-to-ue"
-version = "0.1.0"
+version = "0.1.1"
 description = "Filter XML Editorial information from Adobe Premiere for import into Unreal Engine."
 authors = [
     {name = "Chris Perry", email = "christopher.perry@nick.com"},

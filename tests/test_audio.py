@@ -57,16 +57,16 @@ def test_to_list_str_and_eq():
     a2 = AudioFile("f.wav", "/p", "mc", 10, 20, trackName="Track", trackColor="yellow")
     a3 = AudioFile("f2.wav", "/p", "mc", 10, 21, trackName="Track", trackColor="yellow")
 
-    l = a1.to_list()
+    audio_as_list = a1.to_list()
     # ensure output list matches declared OUTPUT_VALS length
-    assert isinstance(l, list)
-    assert len(l) == len(AudioFile.OUTPUT_VALS)
+    assert isinstance(audio_as_list, list)
+    assert len(audio_as_list) == len(AudioFile.OUTPUT_VALS)
 
     s = str(a1)
     assert "," in s
 
     assert a1 == a2
-    assert not (a1 == a3)
+    assert a1 != a3
 
 
 def test_badTC_flag():
