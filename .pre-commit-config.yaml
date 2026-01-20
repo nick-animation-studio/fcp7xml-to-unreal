@@ -21,5 +21,8 @@ repos:
     # Ruff version.
     rev: v0.14.10
     hooks:
-      # Run the formatter.
+      # Run the linter
+      - id: ruff-check
+        args: [--fix] # Optional: auto-fix lint issues
+      # Run the formatter
       - id: ruff-format
