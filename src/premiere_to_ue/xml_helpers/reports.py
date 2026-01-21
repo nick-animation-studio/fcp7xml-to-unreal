@@ -30,22 +30,21 @@ def audio_report(episode, to_csv=False):
     # now write out
 
     if to_csv:
-        tmpfile = tempfile.NamedTemporaryFile(suffix=".csv", delete=False)
-        with open(tmpfile.name, "w", newline="") as writefile:
-            csvwriter = csv.writer(
-                writefile, dialect="excel", quoting=csv.QUOTE_MINIMAL
-            )
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".csv", newline="", delete=False
+        ) as tmpfile:
+            csvwriter = csv.writer(tmpfile, dialect="excel", quoting=csv.QUOTE_MINIMAL)
             csvwriter.writerow(episode.audio_files[0].dump_header())
             for tn in episode.track_names:
                 for af in episode.audio_files:
-                    if (af.trackname == tn) & (af.printed == False):
+                    if (af.trackname == tn) & (not af.printed):
                         csvwriter.writerow(af.to_list())
                         af.printed = True
         tmpfile.close()
         try:
-            os.startfile(tmpfile.name)
-        except:
-            subprocess.call(("open", tmpfile.name))
+            os.startfile(tmpfile.name)  # Windows only
+        except BaseException:
+            subprocess.call(("open", tmpfile.name))  # macOS
         return None
 
     else:
@@ -71,10 +70,8 @@ def cgfixes_report(episode):
     lastshot = None
     last_ef = None
     for shot in episode.sshots:
-        if shot.name == lastshot:
-            # check for frame parity
-            if last_ef == shot.sf:
-                output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,appears back to back\n"
+        if shot.name == lastshot and last_ef == shot.sf:  # check for frame parity
+            output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,appears back to back\n"
         lastshot = shot.name
         last_ef = shot.ef
 
@@ -103,7 +100,6 @@ def conform_report(episode):
     cg_shots = 0
     output = ""
 
-    matched_shots = {}
     for cshot in episode.cshots:
         matched = []
         for sshot in episode.sshots:
@@ -146,10 +142,10 @@ def conform_report(episode):
     for seq in episode.seqs:
         shotlist = []
         for cshot in episode.cshots:
-            if cshot.seq == seq.name:
-                # ignore A, B, etc shots for counting purposes
-                if len(cshot.name) == 6:
-                    shotlist.append(cshot.name)
+            if (
+                cshot.seq == seq.name and len(cshot.name) == 6
+            ):  # ignore A, B, etc shots for counting purposes
+                shotlist.append(cshot.name)
         shotlist.sort()
 
         last_shot_num = int(shotlist[-1][-3:])
@@ -167,10 +163,10 @@ def conform_report(episode):
                 if cshotname == cshot.name:
                     this_shot = cshot
                     break
-            if this_shot == None:
+            if this_shot is None:
                 output += f"Error: couldn't find shot {cshotname} in cshot list. Shouldn't be possible \n"
                 continue
-            if this_shot.matched_shot == None:
+            if this_shot.matched_shot is None:
                 last_cg_shot = "boarded"
                 continue
             # if we're here we have a real CG shot, let's compare names.

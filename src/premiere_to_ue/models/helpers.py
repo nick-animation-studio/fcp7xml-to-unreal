@@ -32,7 +32,7 @@ def frames_to_tc(frame, for_srt=False, additional_frames: int = 0):
     s = int((frame % 1440) / 24)
     f = frame % 1440 % 24
     if not for_srt:
-        return "%02d:%02d:%02d:%02d" % (h, m, s, f)
+        return f"{h:02d}:{m:02d}:{s:02d}:{f:02d}"
     else:
-        ms = f / 24 * 1000
-        return "%02d:%02d:%02d,%03d" % (h, m, s, ms)
+        ms = int(f / 24 * 1000)
+        return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
