@@ -1,16 +1,18 @@
 <p align="center">
   <img width="300" src="images/logo.png?raw=true" alt="icon"/>
 </p>
-<h1 align="center">Premiere to UE</h1>
+<h1 align="center">FCP7XML to Unreal</h1>
 <br></br>
 
- [![Build Status](https://github.com/viacomcbs/premiere-to-ue/actions/workflows/python-package.yml/badge.svg)](https://github.com/viacomcbs/premiere-to-ue/actions/workflows/python-package.yml)
-[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://viacomcbs.github.io/premiere-to-ue/)
-[![GitHub License](https://img.shields.io/github/license/viacomcbs/premiere-to-ue)](https://github.com/viacomcbs/premiere-to-ue/blob/main/LICENSE)
+ [![Build Status](https://github.com/viacomcbs/fcp7xml-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/viacomcbs/fcp7xml-to-unreal/actions/workflows/python-package.yml)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://viacomcbs.github.io/fcp7xml-to-unreal/)
+[![GitHub License](https://img.shields.io/github/license/viacomcbs/fcp7xml-to-unreal)](https://github.com/viacomcbs/fcp7xml-to-unreal/blob/main/LICENSE)
 
-`premiere-to-ue` is a utility for processing XML editorial output from Adobe Premiere, for import into Unreal Engine.
+`fcp7xml-to-unreal` is a utility for processing XML editorial output for import into Unreal Engine.
 
-Edit a sequence from Unreal Engine in Adobe Premiere and send the edits back to Unreal Engine.
+Edit a sequence from Unreal Engine in your preferred editing software, export as XML, then import the edits into Unreal Engine.
+
+![workflow steps](./images/workflow.png)
 
 ## Prerequisites
 
@@ -21,33 +23,46 @@ You will need [Python](https://www.python.org/) installed - all [supported versi
 Install using [pip](https://pypi.org/project/pip/) or [pipx](https://pipx.pypa.io/stable/).
 
 ```bash
-$ pip install premiere-to-ue
+$ pip install fcp7xml-to-unreal
 ```
 
 or
 
 ```bash
-$ pipx install premiere-to-ue
+$ pipx install fcp7xml-to-unreal
 ```
 
-This will provide the `premiere-to-ue` utility. Launch it by typing `premiere-to-ue` in a shell or terminal.
+This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-to-unreal` in a shell or terminal.
 
 ## Workflow
 
-- Render a sequence of images from Unreal Engine.
-- Import those images into Adobe Premiere and edit them.
-- Export an XML edit decision list from Adobe Premiere.
-- **Process the XML with `premiere-to-ue`**
-- Import the filtered XML into Unreal Engine to bring in the edits!
+- Set up your narrative project using some shot naming and structure conventions. Scene, Shot are the defaults - see [film_language](./film_language.md) for details.
+- Render a set of images from Unreal Engine.
+- Import those images into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them.
+  - In the editing application, label Scenes and Shots with overlay images to mark them for syncing to Unreal.
+- Export an XML edit decision list from the editing application in the **FCP7 XML** format.
+- **Process the XML with `fxp7xml-to-unreal`**.
+- Import the filtered XML into Unreal Engine (in the Level Sequence) to bring in the edits!
+
+### Audio Report
+
+The "Audio report" function produces a listing of all audio files used in the edit.
+
+## Applications Tested
+
+- Adobe Premiere Pro 26.0.0
+- Unreal Engine 5.1.1
+
+Note: Other editing applications (for example, Resolve) that can export Final Cut Pro 7 XML should be usable.
 
 ## Changes
 
-See the product [Change Log](https://github.com/viacomcbs/premiere-to-ue/blob/main/CHANGELOG.md) on GitHub for a history of changes.
+See the product [Change Log](https://github.com/viacomcbs/fcp7xml-to-unreal/blob/main/CHANGELOG.md) on GitHub for a history of changes.
 
 ## Problems?
 
-Please submit [issues](https://github.com/viacomcbs/premiere-to-ue/issues) on GitHub.
+Please submit [issues](https://github.com/viacomcbs/fcp7xml-to-unreal/issues) on GitHub.
 
 ## Want to contribute?
 
-Details on the GitHub page: [https://github.com/viacomcbs/premiere-to-ue](https://github.com/viacomcbs/premiere-to-ue).
+Details on the GitHub page: [https://github.com/viacomcbs/fcp7xml-to-unreal](https://github.com/viacomcbs/fcp7xml-to-unreal).
