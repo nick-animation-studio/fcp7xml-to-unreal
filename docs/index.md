@@ -36,18 +36,19 @@ This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-
 
 ## Workflow
 
-- Set up your narrative project using some shot naming and structure conventions. Scene, Shot are the defaults - see [film_language](./film_language.md) for details.
-- If configuring differently from the defaults, copy and edit a [config.yaml](../src/premiere_to_ue/config.yaml) file as needed. See [configuration.md](./configuration.md) for details.
+- Set up your narrative project using some shot naming and structure conventions. Episode, Scene, and Shot are the defaults - see [film_language](./film_language.md) for details.
+  - If configuring differently from the defaults, copy and edit a [config.yaml](../src/premiere_to_ue/config.yaml) file as needed. See [configuration.md](./configuration.md) for details.
 - Render a movie for each shot from Unreal Engine, following the naming established in `config.yaml`.
-- Import those movies into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them.
-  - In the editing application, label Scenes and Shots with overlay images to mark them for syncing to Unreal.
+  - The defaults provided assume an Episode, Scene, Shot naming convention, where the movie rendered for Episode 101, Scene 02, Shot 003 would be named `101_02_shot_003.mov`.
+- Import the movies into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them.
+  - In the editing application, label Scenes and Shots with burnin images to mark them for syncing to Unreal. (this anticipates Dissolves, Fades, and other transitions, as well as non-shot items like leaders and breaks)
 - Export an XML representation of the cut from the editing application in the **FCP7 XML** format.
 - **Process the XML with `fxp7xml-to-unreal`**.
-- Import the filtered XML into Unreal Engine (in the Level Sequence) to bring in the edits!
+- Import the filtered XML into Unreal Engine (in the Level Sequence) to apply the edits to Unreal shots!
 
 ### Audio Report
 
-The "Audio report" function produces a listing of all audio files used in the edit.
+The "Audio report" function produces a csv file listing all audio files used in the edit.
 
 ## Applications Tested
 
