@@ -10,7 +10,7 @@
 
 `fcp7xml-to-unreal` is a utility for processing XML editorial output for import into Unreal Engine.
 
-Edit a sequence from Unreal Engine in your preferred editing software, export as XML, then import the edits into Unreal Engine.
+Edit shots from Unreal Engine in your preferred editing software, export as XML, then import the edits into Unreal Engine.
 
 ![workflow steps](./images/workflow.png)
 
