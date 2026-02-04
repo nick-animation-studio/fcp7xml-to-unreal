@@ -38,8 +38,8 @@ This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-
 
 - Set up your narrative project using some shot naming and structure conventions. Scene, Shot are the defaults - see [film_language](./film_language.md) for details.
 - If configuring differently from the defaults, copy and edit a [config.yaml](../src/premiere_to_ue/config.yaml) file as needed. See [configuration.md](./configuration.md) for details.
-- Render a set of images for each shot from Unreal Engine, following the naming established in `config.yaml`.
-- Import those images into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them.
+- Render a movie for each shot from Unreal Engine, following the naming established in `config.yaml`.
+- Import those movies into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them.
   - In the editing application, label Scenes and Shots with overlay images to mark them for syncing to Unreal.
 - Export an XML edit decision list from the editing application in the **FCP7 XML** format.
 - **Process the XML with `fxp7xml-to-unreal`**.
