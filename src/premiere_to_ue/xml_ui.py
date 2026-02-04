@@ -8,14 +8,12 @@ from premiere_to_ue.xml_helpers.reports import (
     cgfixes_report,
     conform_report,
 )
-from premiere_to_ue.xml_helpers.syncsketch import get_name, upload
 
 
 class xmlUI:
     def __init__(
         self,
         root=None,
-        ss_link=None,
         frm=None,
         xml_file_string="",
         episode=None,
@@ -24,7 +22,6 @@ class xmlUI:
         if xml_functions is None:
             xml_functions = []
         self.root = root
-        self.ss_link = ss_link
         self.frm = frm
         self.xml_file_string = xml_file_string
         self.current_episode = episode
@@ -42,34 +39,7 @@ class xmlUI:
         self.show_output(conform_report(self.current_episode))
 
     def output_filtered_xml(self):
-        self.show_output(self.current_episode.write_filtered())
-
-    def confirm_upload(self):
-        syncsketch_name = get_name(self.ss_link.get())
-        if syncsketch_name:
-            new_window = Toplevel(self.root)
-            new_window.resizable(True, True)
-            new_window.title("Confirm Upload")
-
-            xml_name = self.current_episode.file.rsplit("/", 1)[1]
-
-            frm = ttk.Frame(new_window, padding=10)
-            frm.grid()
-
-            ttk.Label(
-                frm, text=f"Upload notes from {xml_name} to {syncsketch_name}?"
-            ).grid(column=0, row=0)
-            ttk.Button(frm, text="Confirm", command=self.output_syncsketch).grid(
-                column=0, row=1
-            )
-        else:
-            messagebox.showerror(
-                "Error",
-                "Could not get item name from SyncSketch, see console for errors.",
-            )
-
-    def output_syncsketch(self):
-        self.show_output(upload(self.current_episode, self.ss_link.get()))
+        self.current_episode.write_filtered()
 
     def create_button(self, label, function):
         button = ttk.Button(self.frm, text=label, command=function)
@@ -91,11 +61,7 @@ class xmlUI:
             for button in self.xml_functions:
                 button.config(state=NORMAL)
 
-            report_output = (
-                "Aggregate Reports - please scroll down and check all 3!\n\n"
-            )
-
-            report_output += "Ingest logs:\n\n"
+            report_output = "Ingest logs:\n\n"
             report_output += self.current_episode.ingest_log
             report_output += "\n\n"
 
@@ -137,27 +103,20 @@ def main():
     xml_file_string = tk.StringVar()
     xml_file_string.set("Please choose an XML file")
 
-    ss_link = tk.StringVar()
-    ss_link.set("If using upload, enter a syncsketch link")
-
-    xml_ui = xmlUI(root=root, frm=frm, ss_link=ss_link, xml_file_string=xml_file_string)
+    xml_ui = xmlUI(root=root, frm=frm, xml_file_string=xml_file_string)
 
     xml_ui.create_button("Audio report", xml_ui.output_audio)
     # xml_ui.create_button("CG Fixes report", xml_ui.output_cgfixes)
     # xml_ui.create_button("Conform report", xml_ui.output_conform)
     xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)
-    xml_ui.create_button("Upload notes to syncsketch", xml_ui.confirm_upload)
+    # xml_ui.create_button("Upload notes to syncsketch", xml_ui.confirm_upload)
 
     tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
-        column=0, row=0, sticky="news", columnspan=len(xml_ui.xml_functions) - 1
+        column=0, row=0, sticky="news", columnspan=len(xml_ui.xml_functions)
     )
 
     ttk.Button(frm, text="Choose an xml", command=xml_ui.xml_to_episode).grid(
-        column=len(xml_ui.xml_functions) - 1, row=0
-    )
-
-    tk.Entry(frm, textvariable=ss_link, width=100).grid(
-        column=0, row=1, sticky="news", columnspan=len(xml_ui.xml_functions) - 1
+        column=len(xml_ui.xml_functions), row=0
     )
 
     root.mainloop()

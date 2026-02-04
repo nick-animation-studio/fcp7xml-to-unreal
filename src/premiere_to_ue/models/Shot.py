@@ -1,33 +1,35 @@
-from premiere_to_ue import logger
+from abc import ABC, abstractmethod
 
 
-class Shot:
+# A TimelineEntity is something that lives in a timeline, could be a shot, a burnin, a scene marker etc.
+class TimelineEntity(ABC):
     def __init__(self, name, sf, ef, ip, op):
-        self.name = name
+        self.rawname = name
         self.sf = int(sf)
         self.ef = int(ef)
         self.ip = int(ip)
         self.op = int(op)
         self.dur = self.sf - self.ef
         self.clipdur = self.op - self.ip
-        self.fx = {}
-        self.seq = None
-        self.matched_shot = None
-
         self.notes = []
+        self.fx = {}
+        self.container = None  # e.g. broader entity containing this shot, aka a scene
 
-    def scene_number(self):
-        return self.name.split("_")[1]
+    # TODO: needed?
+    # def is_valid(self):
+    #    logger.info(f"shot: {self.ip} {self.op} {self.sf} {self.ef}")
+    #    return True
 
-    def is_valid(self):
-        logger.info(f"shot: {self.ip} {self.op} {self.sf} {self.ef}")
-        return True
+    # The name method needs local implementation and needs to be sortable
+    @abstractmethod
+    def name(self):
+        pass
 
     def __lt__(self, other):
-        return self.name < other.name
+        return self.name() < other.name()
 
     def __str__(self):
-        outstr = f"{self.name:30s} {self.sf:6d} {self.ef:6d}"
+        outstr = f"{self.rawname:30s} {self.sf:6d} {self.ef:6d}"
         return outstr
 
     def fx_str(self):
@@ -37,6 +39,9 @@ class Shot:
             for param in self.fx[k]:
                 outstr += f" {param} {self.fx[k][param]}"
         return outstr
+
+    def has_fx(self):
+        return len(self.fx) > 0
 
     def match(self, s):
         # Logic is this:
@@ -57,19 +62,54 @@ class Shot:
     def contains(self, s):
         return (s.sf >= self.sf) & (s.ef <= self.ef)
 
-    # return true if this shot overlaps any of the frame range given
+    # return true if this TimelineEntity overlaps any of the frame range given
     def overlaps(self, sf, ef):
         return not (ef < self.sf) | (sf > self.ef)
 
     def add_fx(self, fx_name, fx_val_dict):
-        add_it = True
-        """
-        if (fx_name == "basic"):
-            if (fx_val_dict[ "scale"] == "200") & (fx_val_dict[ "rotation"] == "0"):
-                add_it = False
-        """
-        if add_it:
-            self.fx[fx_name] = fx_val_dict
+        self.fx[fx_name] = fx_val_dict
 
-    def has_fx(self):
-        return len(self.fx) > 0
+
+# Whatever your pipeline, you can build in your local specifics to these subclasses.
+# Scenes are made up of StoryShots.
+# When it's time to conform, ConformedShots are matched to StoryShots.
+
+
+class UnrealShot(TimelineEntity):
+    def __init__(self, name, sf, ef, ip, op):
+        super().__init__(name, sf, ef, ip, op)
+
+    def name(self):
+        return self.rawname
+
+    # def scene_number(self):
+    #    return self.rawname.split("_")[1]
+
+
+class ConformScene(TimelineEntity):
+    def __init__(self, name, sf, ef, ip, op):
+        super().__init__(name, sf, ef, ip, op)
+
+    # Our scene burnin images were named as follows:
+    # seq_001,
+    # seq_121a, etc.
+    # So returning the name without the prefix 'seq_' gives us our sortable scene "name"
+    def name(self):
+        return self.rawname[3:]
+
+
+class ConformShot(TimelineEntity):
+    def __init__(self, name, sf, ef, ip, op):
+        super().__init__(name, sf, ef, ip, op)
+
+    def name(self):
+        # ConformShots in this implementation are named SC_SHT
+        # SC  = Scene code
+        # SHT = Shot code
+        return self.container.name() + "_" + self.rawname[3:]
+
+    # TODO: this is very implementation-specific, and exists only to try and auto-resolve issues where
+    # the conform shot burnin overlaps with multiple scene burnins.
+
+    def is_first_shot(self):
+        return int(self.rawname[3:]) == 1

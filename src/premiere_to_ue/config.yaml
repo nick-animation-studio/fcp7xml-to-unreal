@@ -6,4 +6,10 @@ audio:
     yellow: "From Audio Library"
   track_color_nomatch_label: "Temp Material"
 
+frame_rate: '24'
 shot_name_regex: '[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+'
+shot_name_resubs: [
+  { 'pattern': r'\(.*\)', 'replacement': r'' },
+  { 'pattern': r'_SB', 'replacement': r'' },
+  { 'pattern': r"\_\d\d\d\d\d\d\d\d", 'replacement': r''},
+  ]
