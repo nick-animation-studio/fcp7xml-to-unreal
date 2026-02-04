@@ -10,7 +10,7 @@
 
 `fcp7xml-to-unreal` is a utility for filtering FCP XML (FCP 7 XML v5) editorial output for import into Unreal Engine.
 
-Edit shots from Unreal Engine in your preferred editing software and import the edits back into Unreal Engine, without crashing. **Only FCP 7 XML v5 is supported.**
+Edit shots rendered from Unreal Engine in your preferred editing software and import the edits back into Unreal Engine, without crashing. **Only FCP 7 XML v5 is supported.**
 
 **This is the readme for developers.** The documentation for users is available here: [https://viacomcbs.github.io/fcp7xml-to-unreal/](https://viacomcbs.github.io/fcp7xml-to-unreal/)
 
