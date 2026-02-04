@@ -41,7 +41,7 @@ This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-
 - Render a movie for each shot from Unreal Engine, following the naming established in `config.yaml`.
 - Import those movies into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them.
   - In the editing application, label Scenes and Shots with overlay images to mark them for syncing to Unreal.
-- Export an XML edit decision list from the editing application in the **FCP7 XML** format.
+- Export an XML representation of the cut from the editing application in the **FCP7 XML** format.
 - **Process the XML with `fxp7xml-to-unreal`**.
 - Import the filtered XML into Unreal Engine (in the Level Sequence) to bring in the edits!
 
