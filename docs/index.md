@@ -41,7 +41,7 @@ This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-
 - Render a movie for each shot from Unreal Engine, following the naming established in `config.yaml`.
   - The defaults provided assume an Episode, Scene, Shot naming convention, where the movie rendered for Episode 101, Scene 02, Shot 003 would be named `101_02_shot_003.mov`.
 - Import the movies into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them.
-  - In the editing application, make cuts, labeling Unreal Scenes and Shots with burnin images to mark them for syncing back to Unreal. (this contemplates Dissolve and Fade transitions, as well as non-shot items like leaders and breaks). See [marking shots](./marking_shots.md) for details.
+  - In the editing application, make cuts, labeling Unreal Scenes and Shots with burnin images to mark them for syncing back to Unreal. (this contemplates Dissolve and Fade transitions, as well as non-shot items like leaders and breaks). See [marking_shots.md](./marking_shots.md) for details.
 - Export an XML representation of the cut from the editing application in the **FCP7 XML** format.
 - **Process the XML with `fxp7xml-to-unreal`**.
 - Import the filtered XML into Unreal Engine (in the Level Sequence) to apply the edits to Unreal shots!
