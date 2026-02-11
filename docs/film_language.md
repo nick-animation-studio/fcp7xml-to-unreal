@@ -2,9 +2,9 @@
 
 The following definitions were used in setting up this utility:
 
-## Episode
+## Show
 
-A narrative construct that can stand alone as a distinct story, but also contributes to an overall storyline - where a larger story is told through a series of episodes.
+A collection of one or more Scenes that can be considered a complete filmic entity (synonyms: Cut, Episode). This could be a show name, like "Firebug" or an episode number, like "101".
 
 ## Scene
 
@@ -16,7 +16,7 @@ A single take, or uninterrupted run of the camera to capture images.
 
 ## Overall
 
-The default configuration for this utility is to operate on a single Episode, where the Episode is composed of Scenes.
+The default configuration for this utility is to operate on a single Show comprising one or more Scenes.
 
 ## References
 
