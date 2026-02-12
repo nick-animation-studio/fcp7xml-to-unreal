@@ -6,9 +6,11 @@ It is often the case that the naming/numbering convention used in the shooting p
 
 For example: consider shots 1, 2, and 3 that were delivered to an editor.
 The final cut from that editor might feature pieces of those shots used in the following order:
+
 2, 3, 1, 3, 1, 2, 3, 3
 
 For convenience in production, this series of shots would be best renamed:
+
 1, 2, 3, 4, 5, 6, 7, 8
 
 We call this process Conforming.
