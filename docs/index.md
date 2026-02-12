@@ -59,7 +59,7 @@ The "Audio report" function produces a csv file listing all audio files used in 
 - DaVinci Resolve 19
 - Unreal Engine 5.1.1
 
-Note: Other editing applications (for example, Resolve) that can export Final Cut Pro 7 XML should be usable.
+Note: Other editing applications (for example, Resolve) that can export Final Cut Pro 7 XML v5 XML should be usable.
 
 ## Changes
 
