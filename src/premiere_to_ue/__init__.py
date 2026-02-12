@@ -3,6 +3,7 @@
 import importlib.metadata
 import logging
 import os
+import sys
 
 import yaml
 
@@ -19,7 +20,7 @@ def setup_logger(log_level: str = "INFO") -> logging.Logger:
     logger.setLevel(log_level)
 
     # Create console handler
-    console_handler = logging.StreamHandler()
+    console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(log_level)
 
     if log_level == "DEBUG":

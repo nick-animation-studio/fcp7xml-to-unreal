@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from premiere_to_ue import config
+
 
 # A TimelineEntity is something that lives in a timeline, could be a shot, a burnin, a scene marker etc.
 class TimelineEntity(ABC):
@@ -95,7 +97,9 @@ class ConformScene(TimelineEntity):
     # seq_121a, etc.
     # So returning the name without the prefix 'seq_' gives us our sortable scene "name"
     def name(self):
-        return self.rawname[3:]
+        # TODO: this is the raw name less the prefix defined in ALL CAPS
+
+        return self.rawname[len(config["CONFORMSCENE_BURNIN_PREFIX"]) :]
 
 
 class ConformShot(TimelineEntity):
@@ -106,7 +110,13 @@ class ConformShot(TimelineEntity):
         # ConformShots in this implementation are named SC_SHT
         # SC  = Scene code
         # SHT = Shot code
-        return self.container.name() + "_" + self.rawname[3:]
+        # TODO: this is the raw name less the prefix defined in ALL CAPS
+
+        return (
+            self.container.name()
+            + "_"
+            + self.rawname[len(config["CONFORMSHOT_BURNIN_PREFIX"]) :]
+        )
 
     # TODO: this is very implementation-specific, and exists only to try and auto-resolve issues where
     # the conform shot burnin overlaps with multiple scene burnins.

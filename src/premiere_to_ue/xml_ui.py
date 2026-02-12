@@ -55,27 +55,27 @@ class xmlUI:
             messagebox.showinfo("Info", "No XML file selected.")
             return
 
-        try:
-            self.xml_file_string.set(xml_path)
-            self.current_episode = Episode(xml_path)
-            for button in self.xml_functions:
-                button.config(state=NORMAL)
+        # try:
+        self.xml_file_string.set(xml_path)
+        self.current_episode = Episode(xml_path)
+        for button in self.xml_functions:
+            button.config(state=NORMAL)
 
-            report_output = "Ingest logs:\n\n"
-            report_output += self.current_episode.ingest_log
-            report_output += "\n\n"
+        report_output = "Ingest logs:\n\n"
+        report_output += self.current_episode.ingest_log
+        report_output += "\n\n"
 
-            report_output += "Conform Report:\n\n"
-            report_output += conform_report(self.current_episode)
-            report_output += "\n\n"
+        report_output += "Conform Report:\n\n"
+        report_output += conform_report(self.current_episode)
+        report_output += "\n\n"
 
-            report_output += "CG Fixes Report:\n\n"
-            report_output += cgfixes_report(self.current_episode)
-            report_output += "\n\n"
+        report_output += "CG Fixes Report:\n\n"
+        report_output += cgfixes_report(self.current_episode)
+        report_output += "\n\n"
 
-            self.show_output(report_output)
-        except Exception as e:
-            messagebox.showerror("Error", f"Could not process XML file:\n{e}")
+        self.show_output(report_output)
+        # except Exception as e:
+        #    messagebox.showerror("Error", f"Could not process XML file:\n{e}")
 
     def show_output(self, output):
         if len(output) == 0:

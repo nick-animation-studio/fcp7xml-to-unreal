@@ -7,13 +7,6 @@ from premiere_to_ue.models.Shot import ConformScene, ConformShot, UnrealShot
 
 
 class Episode:
-    # TODO: move these to config files?
-    # TODO: should these all be regexps? probably.
-    MOVIE_FILE_SUFFIXES = {"mov"}
-    IMAGE_FILE_SUFFIXES = {"png", "jpg"}
-    CONFORMSHOT_BURNIN_PREFIXES = {"Sc_"}
-    SCENE_BURNIN_PREFIXES = {"seq"}
-
     def __init__(self, xml_file):
         self.file = xml_file
         self.tree = ET.parse(xml_file)
@@ -73,11 +66,11 @@ class Episode:
         # More logic can be built in here to preserve audio if needed
         for audio in self.root.findall("./sequence/media/audio"):
             for track in audio.findall("track"):
-                if "MZ.TrackName" in track.attrib:
-                    track_name = track.attrib["MZ.TrackName"]
-                    self.track_names.append(track_name)
-                else:
-                    track_name = "undefined"
+                track_name = "undefined"
+                if track.attrib is not None:
+                    if "MZ.TrackName" in track.attrib:
+                        track_name = track.attrib["MZ.TrackName"]
+                        self.track_names.append(track_name)
 
                 # first pass: store everything in the track in a list
                 # so that we can find transitions in a second pass.
@@ -94,13 +87,16 @@ class Episode:
 
                     # here we have clipitems only.
                     name = thing.find("name").text
-                    masterclipid = thing.find("masterclipid").text
-                    pathurl = thing.find("./file/pathurl")
+                    mcid = thing.find("masterclipid")
+                    masterclipid = mcid.text if mcid is not None else "undefined"
 
+                    pathurl = thing.find("./file/pathurl")
                     path = pathurl.text if pathurl is not None else ""
 
                     start_frame = int(thing.find("start").text)
                     end_frame = int(thing.find("end").text)
+
+                    color = "undefined"
                     for ls in thing.findall("labels"):
                         color = ls.find("label2").text
 
@@ -139,27 +135,25 @@ class Episode:
                 audio.remove(track)
 
     def is_movie_file(self, name):
-        for suffix in self.MOVIE_FILE_SUFFIXES:
+        for suffix in config["MOVIE_FILE_SUFFIXES"]:
             if name.endswith(suffix):
                 return True
         return False
 
     def is_image_file(self, name):
-        for suffix in self.IMAGE_FILE_SUFFIXES:
+        for suffix in config["IMAGE_FILE_SUFFIXES"]:
             if name.endswith(suffix):
                 return True
         return False
 
     def is_conformshot_burnin(self, basename):
-        for prefix in self.CONFORMSHOT_BURNIN_PREFIXES:
-            if basename.startswith(prefix):
-                return True
+        if basename.startswith(config["CONFORMSHOT_BURNIN_PREFIX"]):
+            return True
         return False
 
     def is_conformscene_burnin(self, basename):
-        for prefix in self.SCENE_BURNIN_PREFIXES:
-            if basename.startswith(prefix):
-                return True
+        if basename.startswith(config["CONFORMSCENE_BURNIN_PREFIX"]):
+            return True
         return False
 
     def process_video(self):
@@ -211,12 +205,20 @@ class Episode:
                         clipitem.find("name").text = filteredname
 
                     # the start and end values will be bad if there's a transition.
-                    # It's not clear how to fix this automatically!
+                    # It's not clear how to fix this automatically! TODO: would be cool to figure out some logic
+                    # Trying to be smart. If there are transitions on both sides, however, I'm not sure we can be.
+                    if start == "-1":
+                        if end == "-1":
+                            self.ingest_log += f"**** Removing shot {name}. Check for transitions in the cut and remove them, then export XML and run again!\n"
+                            track.remove(clipitem)
+                            continue
 
-                    if (start == -1) | (end == -1):
-                        self.ingest_log += f"**** Removing shot {name}. Check for a transition and remove it before exporting XML and running again!\n"
-                        track.remove(clipitem)
-                        continue
+                        start = int(end) - (int(outp) - int(inp))
+                        self.ingest_log += f"Auto-fixed shot {name} which still has a transition on its start. Check for accuracy!\n"
+
+                    if end == "-1":
+                        end = int(start) + (int(outp) - int(inp))
+                        self.ingest_log += f"Auto-fixed shot {name} which still has a transition on its end. Check for accuracy!\n"
 
                     # Confirmed this is a story shot, and by here its name has been filtered/cleaned.
                     # It has valid start/end frames.
@@ -260,6 +262,7 @@ class Episode:
                             params = {}
                             # this is scaling/panning
                             for param in fx.findall("parameter"):
+                                # the most basic xforms an editor might use that need to be matched in UE
                                 for param_option in ["scale", "rotation"]:
                                     if param.find("parameterid").text == param_option:
                                         # check for animation
@@ -275,12 +278,14 @@ class Episode:
                                                 "value"
                                             ).text
 
-                            # some cleaning
-                            if "scale" in params and ["scale"] == "100":
+                            # some cleaning; remove no-ops
+                            if "scale" in params and params["scale"] == "100":
                                 params.pop("scale")
                             if "rotation" in params and params["rotation"] == "0":
                                 params.pop("rotation")
-                            this_shot.add_fx(fx_type, params)
+
+                            if len(params) > 0:
+                                this_shot.add_fx(fx_type, params)
 
                         if len(this_shot.fx.keys()) > 0:
                             self.fx_shots.append(this_shot)
@@ -294,7 +299,7 @@ class Episode:
                     for tb in clipitem.findall("rate"):
                         tb.find("timebase").text = config["frame_rate"]
 
-                    # here we're looking for burnin files specific to this pipeline
+                    # here we're looking for burnin files specific to this pipeline (set details in config.yaml)
                     if self.is_conformshot_burnin(ue_asset_name):
                         self.cshots.append(
                             ConformShot(ue_asset_name, start, end, inp, outp)
@@ -302,7 +307,6 @@ class Episode:
                         clipitem.find("name").text = ue_asset_name
 
                     elif self.is_conformscene_burnin(ue_asset_name):
-                        # TODO: this too should be a filter in config
                         self.scenes.append(
                             ConformScene(ue_asset_name, start, end, inp, outp)
                         )
@@ -314,11 +318,7 @@ class Episode:
                 else:
                     track.remove(clipitem)
 
-        print(
-            f"Processed episode XML: {len(self.sshots)} unreal shots, {len(self.cshots)} conform shots, {len(self.scenes)} conform scenes found."
-        )
-
-        self.ingest_log += "Episode XML contains:\n"
+        self.ingest_log += "\nEpisode XML contains:\n"
         self.ingest_log += f"\t{len(self.sshots)} unreal shots,\n"
         self.ingest_log += f"\t{len(self.cshots)} conform shots,\n"
         self.ingest_log += f"\t{len(self.scenes)} conform scenes,\n"

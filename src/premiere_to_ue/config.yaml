@@ -13,3 +13,14 @@ shot_name_resubs: [
   { 'pattern': r'_SB', 'replacement': r'' },
   { 'pattern': r"\_\d\d\d\d\d\d\d\d", 'replacement': r''},
   ]
+
+MOVIE_FILE_SUFFIXES: {'mov'}
+IMAGE_FILE_SUFFIXES: {"png", "jpg"}
+
+# Here are the values for the provided burnins
+CONFORMSHOT_BURNIN_PREFIX: "shot_"
+CONFORMSCENE_BURNIN_PREFIX: "scene_"
+
+# Here are the values for the test .xml file
+# CONFORMSHOT_BURNIN_PREFIX: "Sc_"
+# CONFORMSCENE_BURNIN_PREFIX: "seq"
