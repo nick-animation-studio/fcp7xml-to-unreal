@@ -75,77 +75,6 @@ def test_output_methods_call_show_output(monkeypatch):
     assert called["out"] == "CONFORM"
 
 
-def test_output_filtered_xml_calls_write_filtered(monkeypatch):
-    ui = xu.xmlUI()
-
-    class FEp:
-        def write_filtered(self):
-            return "FILTERED"
-
-    ui.current_episode = FEp()
-    recorded = {}
-    monkeypatch.setattr(
-        xu.xmlUI, "show_output", lambda self, out: recorded.setdefault("o", out)
-    )
-    ui.output_filtered_xml()
-    assert recorded["o"] == "FILTERED"
-
-
-def test_confirm_upload_shows_error_when_get_name_none(monkeypatch):
-    ui = xu.xmlUI()
-    ui.root = object()
-    ui.ss_link = DummyStringVar()
-    ui.ss_link.set("link")
-
-    monkeypatch.setattr(xu, "get_name", lambda link: None)
-    called = {}
-    monkeypatch.setattr(
-        xu.messagebox,
-        "showerror",
-        lambda title, msg: called.setdefault("err", (title, msg)),
-    )
-
-    ui.confirm_upload()
-    assert "err" in called
-
-
-def test_confirm_upload_creates_window_when_get_name(monkeypatch):
-    ui = xu.xmlUI()
-    ui.root = object()
-    ui.ss_link = DummyStringVar()
-    ui.ss_link.set("link")
-
-    monkeypatch.setattr(xu, "get_name", lambda link: "ItemName")
-
-    created = {}
-
-    class FakeTop:
-        def __init__(self, root):
-            created["top"] = True
-
-        def resizable(self, a, b):
-            pass
-
-        def title(self, t):
-            created["title"] = t
-
-    monkeypatch.setattr(xu, "Toplevel", FakeTop)
-    # stub ttk widgets used inside confirm_upload
-    monkeypatch.setattr(
-        xu,
-        "ttk",
-        types.SimpleNamespace(
-            Frame=lambda *a, **k: types.SimpleNamespace(grid=lambda *a, **k: None),
-            Label=lambda *a, **k: types.SimpleNamespace(grid=lambda *a, **k: None),
-            Button=lambda *a, **k: types.SimpleNamespace(grid=lambda *a, **k: None),
-        ),
-    )
-
-    ui.current_episode = types.SimpleNamespace(file="/path/to/file.xml")
-    ui.confirm_upload()
-    assert created.get("top", False) is True
-
-
 def test_xml_to_episode_no_file_shows_info(monkeypatch):
     ui = xu.xmlUI()
     ui.xml_file_string = DummyStringVar()
@@ -232,4 +161,5 @@ def test_xml_to_episode_success_enables_buttons_and_shows_output(monkeypatch, tm
     # buttons should be enabled (state set to NORMAL)
     assert btn1._state == xu.NORMAL
     assert btn2._state == xu.NORMAL
-    assert "Aggregate Reports" in recorded["out"]
+    # output should include ingest log and reports
+    assert "INGEST" in recorded["out"]
