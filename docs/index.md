@@ -34,6 +34,8 @@ $ pipx install fcp7xml-to-unreal
 
 This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-to-unreal` in a shell or terminal.
 
+![fcp7xml-to-unreal UI](./images/fcp7xml-to-unreal.png)
+
 ## Workflow
 
 - Set up your narrative project using some shot naming and structure conventions. Show, Scene, and Shot are the default terms used here - see [film_language](./film_language.md) for details.
