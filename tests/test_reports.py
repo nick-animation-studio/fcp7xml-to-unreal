@@ -1,5 +1,5 @@
 from premiere_to_ue.models.Audio import AudioFile
-from premiere_to_ue.models.Shot import Shot
+from premiere_to_ue.models.Shot import ConformScene, ConformShot, UnrealShot
 from premiere_to_ue.xml_helpers.reports import (
     audio_report,
     cgfixes_report,
@@ -13,7 +13,7 @@ class SimpleEpisode:
         self.track_names = []
         self.cshots = []
         self.sshots = []
-        self.seqs = []
+        self.scenes = []
 
 
 def test_audio_report_assigns_master_path_and_detects_shots():
@@ -28,7 +28,11 @@ def test_audio_report_assigns_master_path_and_detects_shots():
     ep.track_names = ["Track1"]
 
     # create a shot that overlaps the second audio file
-    s = Shot("001_005", 12, 30, 0, 0)
+    s = ConformShot("001_005", 12, 30, 0, 0)
+    # create a scene that overlaps the shot so it gets added to the audio file's shotlist
+    scn = ConformScene("001", 0, 100, 0, 0)
+    s.container = scn
+    ep.scenes = [scn]
     ep.cshots = [s]
 
     out = audio_report(ep, to_csv=False)
@@ -36,44 +40,45 @@ def test_audio_report_assigns_master_path_and_detects_shots():
     # af_no_path should receive the master clip path from af_with_path
     assert af_no_path.path == af_with_path.path
     # dialogue detection should add overlapping shot name to shotlist
-    assert s.name in af_no_path.shotlist
+    assert s.name() in af_no_path.shotlist
 
 
 def test_cgfixes_report_no_fx_and_with_fx():
     ep = SimpleEpisode()
     # no sshots -> no fixes
     ep.sshots = []
-    assert cgfixes_report(ep) == "No cg fixes found!"
+    assert cgfixes_report(ep) == "No CG fixes found!"
 
     # with a shot that has fx
-    s = Shot("001_001.png", 1, 2, 0, 0)
+    s = UnrealShot("001_001.png", 1, 2, 0, 0)
     s.add_fx("basic", {"scale": "50"})
     ep.sshots = [s]
     out = cgfixes_report(ep)
     assert "FX: basic" in out or "basic" in out
 
 
-def test_conform_report_reports_unmatched_and_scene_warnings():
+def test_conform_report_unmatched_and_matched_shots():
     ep = SimpleEpisode()
+    scn = ConformScene("scene_001", 0, 100, 0, 0)
+    ep.scenes = [scn]
+    nomatch_scn = ConformScene("scene_002", 0, 100, 0, 0)
+    ep.scenes.append(nomatch_scn)
+    # create a conformed shot with no matching scene shot
+    cs_unmatched = ConformShot("shot_001", 10, 20, 0, 0)
+    cs_unmatched.container = nomatch_scn
+    ep.cshots = [cs_unmatched]
 
-    # create seqs that are non-consecutive to trigger scene burnin warning
-    class Seq:
-        def __init__(self, name):
-            self.name = name
-
-    ep.seqs = [Seq("seq001.png"), Seq("seq003.png")]
-
-    # unmatched cshot
-    c_unmatched = Shot("c_un", 1, 2, 0, 0)
-    # add a cshot that is mapped to seq001.png and has a 6-char name so conform_report
-    # can build a shotlist without raising an IndexError
-    c_for_seq = Shot("S01001", 1, 2, 0, 0)
-    c_for_seq.seq = "seq001.png"
-    c_for_seq2 = Shot("S02002", 1, 2, 0, 0)
-    c_for_seq2.seq = "seq003.png"
-    ep.cshots = [c_unmatched, c_for_seq, c_for_seq2]
-
-    # no story shots to match => should warn about boarded shot
     out = conform_report(ep)
-    assert "doesn't match any story shot" in out
-    assert "SCENE BURNIN WARNING" in out
+    assert "doesn't have a matching unreal shot" in out
+    assert "No unmatched shots found!" not in out
+
+    ushot = UnrealShot("shot_005", 12, 30, 0, 0)
+    ep.sshots = [ushot]
+
+    # now add a conformed shot that matches the Unreal shot and should be detected as a match
+    s_matched = ConformShot("shot_005", 12, 30, 0, 0)
+    s_matched.container = scn
+    ep.cshots.append(s_matched)
+
+    out = conform_report(ep)
+    assert "Conform scene 001 has 1 shot:" in out
