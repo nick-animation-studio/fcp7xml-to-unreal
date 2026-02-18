@@ -226,7 +226,7 @@ class Episode:
                     this_shot = UnrealShot(filteredname, start, end, inp, outp)
                     self.sshots.append(this_shot)
 
-                    # check for premiere filters that necessiate fixes in 3D
+                    # check for editing filters that necessitate fixes in 3D
                     for fx in clipitem.findall("filter/effect"):
                         fx_type = fx.find("effectid").text
 
