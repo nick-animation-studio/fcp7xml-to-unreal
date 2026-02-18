@@ -10,7 +10,7 @@
 
 `fcp7xml-to-unreal` is a utility for processing XML editorial output for import into Unreal Engine.
 
-Edit shots rendered from Unreal Engine in your preferred editing software, export as XML, run the XML through this utility, then import the filtered XML into Unreal Engine.
+Edit shots rendered from Unreal Engine in your preferred editing software, export as XML, run the XML through this utility, then import the filtered XML into Unreal Engine to bring in the updates.
 
 ![workflow steps](./images/workflow.png)
 
@@ -42,16 +42,16 @@ This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-
   - The defaults provided assume a Show/Scene/Shot naming convention, where the movie rendered for Scene 02 Shot 003 of a Show named 101 would be named `101_02_shot_003.mov`.
   - **Note:** the name of the rendered movie file must match the name of the LevelSequence in the Unreal Project (101_02_shot_003.mov is rendered from a LevelSequence named 101_02_shot_003)
   - **Note:** the names of LevelSequences should be unique throughout the Unreal Project - this is how the movies are matched back to Unreal. Unreal does not enforce uniqueness of LevelSequence names, this must be managed manually.
-- Import the movies into an editing application (Final Cut Pro, Adobe Premiere, Resolve...) and edit them together.
+- Import the movies into an editing application (Final Cut Pro, Adobe Premiere, DaVinci Resolve) and edit them together.
 - If you are planning to use the Conform features of the utility, which helps teams transform a locked cut into a clean, consecutive numbering of Scenes and Shots, then add the Scene and Shot Burnin images on separate tracks above your movie tracks in your editing system. See [marking_shots.md](./marking_shots.md) for details.
 - Export an XML representation of the cut from the editing application in the **FCP7 XML** format.
-- **Process the XML with `fxp7xml-to-unreal`**.
+- **Process the XML with `fcp7xml-to-unreal`**.
 - Examine the reporting information provided by the tool to help identify: shot naming inconsistencies, shots that have been manipulated by the editor in such a way that the Unreal version of the same shot will no longer match (such as retimed, scaled, rotated, etc.), and if using the Conform tools, Conform shot mismatches and numbering errors.
 - Import the filtered XML into Unreal Engine (in the Level Sequence) to apply the edits to Unreal shots!
 
 ### Audio Report
 
-The "Audio report" function produces a csv file listing all audio files used in the edit.
+The "Audio report" function produces a csv listing of all audio files used in the edit.
 
 ## Applications Tested
 
@@ -59,7 +59,7 @@ The "Audio report" function produces a csv file listing all audio files used in 
 - DaVinci Resolve 19
 - Unreal Engine 5.1.1
 
-Note: Other editing applications (for example, Resolve) that can export Final Cut Pro 7 XML v5 XML should be usable.
+Note: Other editing applications that can export Final Cut Pro 7 XML v5 XML should be usable.
 
 ## Changes
 
