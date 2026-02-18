@@ -21,6 +21,6 @@ IMAGE_FILE_SUFFIXES: {"png", "jpg"}
 CONFORMSHOT_BURNIN_PREFIX: "shot_"
 CONFORMSCENE_BURNIN_PREFIX: "scene_"
 
-# Here are the values for the test .xml file
+# Here are the values for the Premiere test .xml file
 # CONFORMSHOT_BURNIN_PREFIX: "Sc_"
 # CONFORMSCENE_BURNIN_PREFIX: "seq"
