@@ -3,18 +3,14 @@ import xml.etree.ElementTree as ET
 
 from premiere_to_ue import config, logger
 from premiere_to_ue.models.Audio import AudioFile
-from premiere_to_ue.models.Note import Note
-from premiere_to_ue.models.Shot import Shot
+from premiere_to_ue.models.Shot import ConformScene, ConformShot, UnrealShot
 
 
 class Episode:
-    RENDER_FILE_TYPES = {"mov"}
-
     def __init__(self, xml_file):
         self.file = xml_file
         self.tree = ET.parse(xml_file)
         self.root = self.tree.getroot()
-        self.shots = []
         self.track_names = []
         self.audio_files = []
         self.shot_count = 0
@@ -29,7 +25,7 @@ class Episode:
         self.sshots = []
         self.fx_shots = []
 
-        self.seqs = []
+        self.scenes = []
         self.notes = []
 
         self.ingest_log = ""
@@ -38,30 +34,23 @@ class Episode:
         for video in video_tracks:
             tracks_removed = 0
             for track in video.findall("track"):
+                # remove disabled tracks entirely
                 if track.find("enabled").text == "FALSE":
                     tracks_removed += 1
                     video.remove(track)
                     continue
 
-        self.process_notes()
         self.process_audio()
         self.process_video()
-        for note in self.notes:
-            self.add_note(note)
-
-    def add_note(self, note):
-        for shot in self.shots:
-            if shot.contains(note):
-                shot.notes.append(note)
 
     def write_filtered(self):
-        output = "Check FX Shots: \n"
-        for shot in self.fx_shots:
-            output += str(shot) + "\n"
         outfile = self.file[:-4] + "_filtered" + ".xml"
-        self.tree.write(outfile)
+        try:
+            self.tree.write(outfile)
+        except Exception as e:
+            logger.error(f"Error writing filtered XML: {e}")
         logger.info(f"Wrote filtered xml to file: {outfile}")
-        return output
+        return
 
     def process_audio(self):
         #
@@ -73,13 +62,15 @@ class Episode:
 
         important_tags = ["clipitem", "transitionitem"]
 
+        # Currently, remove all audio from the exported XML, but build a report of what was there.
+        # More logic can be built in here to preserve audio if needed
         for audio in self.root.findall("./sequence/media/audio"):
             for track in audio.findall("track"):
-                if "MZ.TrackName" in track.attrib:
-                    track_name = track.attrib["MZ.TrackName"]
-                    self.track_names.append(track_name)
-                else:
-                    track_name = "undefined"
+                track_name = "undefined"
+                if track.attrib is not None:
+                    if "MZ.TrackName" in track.attrib:
+                        track_name = track.attrib["MZ.TrackName"]
+                        self.track_names.append(track_name)
 
                 # first pass: store everything in the track in a list
                 # so that we can find transitions in a second pass.
@@ -96,14 +87,16 @@ class Episode:
 
                     # here we have clipitems only.
                     name = thing.find("name").text
-                    masterclipid = thing.find("masterclipid").text
-                    pathurl = thing.find("./file/pathurl")
+                    mcid = thing.find("masterclipid")
+                    masterclipid = mcid.text if mcid is not None else "undefined"
 
-                    # remove the leading "file://localhost" URL stuff
-                    path = pathurl.text[16:] if pathurl is not None else ""
+                    pathurl = thing.find("./file/pathurl")
+                    path = pathurl.text if pathurl is not None else ""
 
                     start_frame = int(thing.find("start").text)
                     end_frame = int(thing.find("end").text)
+
+                    color = "undefined"
                     for ls in thing.findall("labels"):
                         color = ls.find("label2").text
 
@@ -141,15 +134,37 @@ class Episode:
 
                 audio.remove(track)
 
+    def is_movie_file(self, name):
+        for suffix in config["MOVIE_FILE_SUFFIXES"]:
+            if name.endswith(suffix):
+                return True
+        return False
+
+    def is_image_file(self, name):
+        for suffix in config["IMAGE_FILE_SUFFIXES"]:
+            if name.endswith(suffix):
+                return True
+        return False
+
+    def is_conformshot_burnin(self, basename):
+        if basename.startswith(config["CONFORMSHOT_BURNIN_PREFIX"]):
+            return True
+        return False
+
+    def is_conformscene_burnin(self, basename):
+        if basename.startswith(config["CONFORMSCENE_BURNIN_PREFIX"]):
+            return True
+        return False
+
     def process_video(self):
         for track in self.root.findall("./sequence/media/video/track"):
             for clipitem in track.findall("clipitem"):
-                name = clipitem.find("name").text
-
                 # remove disabled clips entirely
                 if clipitem.find("enabled").text == "FALSE":
                     track.remove(clipitem)
                     continue
+
+                name = clipitem.find("name").text
 
                 start = clipitem.find("start").text
                 end = clipitem.find("end").text
@@ -157,13 +172,12 @@ class Episode:
                 inp = clipitem.find("in").text
                 outp = clipitem.find("out").text
 
-                this_shot = Shot(name, start, end, inp, outp)
-                self.shots.append(this_shot)
-
-                if name[-3:] in self.RENDER_FILE_TYPES:
-                    # Updated regexp is pretty robust, should not let anything bad through.
-                    # Disable the printout "NOTE" below if you fear something good is being filtered out!
-
+                # Is this clip a movie file?
+                # If so, check if it's a valid story shot by matching its name against the regex from config
+                # Uncomment the printout "NOTE" below if you fear something appropriate is being filtered out!
+                if self.is_movie_file(name):
+                    # TODO: use 'unreal shot' instead of 'story shot'
+                    # TODO: should this regex live with UnrealShot? I think so.
                     story_shot_pattern = config["shot_name_regex"]
                     logger.debug(
                         f"Checking shot {name} against regex {story_shot_pattern}"
@@ -172,38 +186,47 @@ class Episode:
                     if valid_story_shot is None:
                         # print(f"NOTE: ignoring input clip {name} (it does not match story shot naming conventions)")
                         track.remove(clipitem)
-                        self.shots.remove(this_shot)
                         continue
 
-                    # print(f"After auto-pruning known things, we are forging ahead with {name} as a legit shot.")
-                    # get rid of (2) and such if there
-                    newname = re.sub(r"\(.*\)", "", name)
+                    # Now let's filter the name to make it match UE level sequence naming
+                    # Productions can have any number of filters, just run the list in order.
 
-                    # get rid of _SB if it's there
-                    newname = newname.replace("_SB", "")
+                    # TODO: eval() to be removed once yaml config is fixed to not double quote strings
+                    filteredname = name
+                    for resub in config["shot_name_resubs"]:
+                        filteredname = re.sub(
+                            eval(resub["pattern"]),
+                            eval(resub["replacement"]),
+                            filteredname,
+                        )
 
-                    # get rid of date _xxxxxxxx if it's there
-                    newname = re.sub(r"\_\d\d\d\d\d\d\d\d", "", newname)
-
-                    if newname != name:
-                        clipitem.find("name").text = newname
-
-                    this_shot.name = newname
+                    # if we changed anything let's rename this
+                    if filteredname != name:
+                        clipitem.find("name").text = filteredname
 
                     # the start and end values will be bad if there's a transition.
-                    # It's not clear how to fix this automatically!
+                    # It's not clear how to fix this automatically! TODO: would be cool to figure out some logic
+                    # Trying to be smart. If there are transitions on both sides, however, I'm not sure we can be.
+                    if start == "-1":
+                        if end == "-1":
+                            self.ingest_log += f"**** Removing shot {name}. Check for transitions in the cut and remove them, then export XML and run again!\n"
+                            track.remove(clipitem)
+                            continue
 
-                    if (this_shot.ef == -1) | (this_shot.ef == -1):
-                        self.ingest_log += (
-                            f"**** Removing shot {newname}. Check for cross dissolve\n"
-                        )
-                        track.remove(clipitem)
-                        self.shots.remove(this_shot)
-                        continue
+                        start = int(end) - (int(outp) - int(inp))
+                        self.ingest_log += f"Auto-fixed shot {name} which still has a transition on its start. Check for accuracy!\n"
 
+                    if end == "-1":
+                        end = int(start) + (int(outp) - int(inp))
+                        self.ingest_log += f"Auto-fixed shot {name} which still has a transition on its end. Check for accuracy!\n"
+
+                    # Confirmed this is a story shot, and by here its name has been filtered/cleaned.
+                    # It has valid start/end frames.
+                    # let's create it as a formal shot and add to our list of shots
+                    this_shot = UnrealShot(filteredname, start, end, inp, outp)
                     self.sshots.append(this_shot)
 
-                    # check for premiere filters that necessiate fixes in 3D
+                    # check for editing filters that necessitate fixes in 3D
                     for fx in clipitem.findall("filter/effect"):
                         fx_type = fx.find("effectid").text
 
@@ -239,6 +262,7 @@ class Episode:
                             params = {}
                             # this is scaling/panning
                             for param in fx.findall("parameter"):
+                                # the most basic xforms an editor might use that need to be matched in UE
                                 for param_option in ["scale", "rotation"]:
                                     if param.find("parameterid").text == param_option:
                                         # check for animation
@@ -254,127 +278,102 @@ class Episode:
                                                 "value"
                                             ).text
 
-                            # some cleaning
-                            if "scale" in params and ["scale"] == "100":
+                            # some cleaning; remove no-ops
+                            if "scale" in params and params["scale"] == "100":
                                 params.pop("scale")
                             if "rotation" in params and params["rotation"] == "0":
                                 params.pop("rotation")
-                            this_shot.add_fx(fx_type, params)
+
+                            if len(params) > 0:
+                                this_shot.add_fx(fx_type, params)
 
                         if len(this_shot.fx.keys()) > 0:
                             self.fx_shots.append(this_shot)
 
-                elif name[-3:] == "png":
-                    basename = name[:-4]
+                elif self.is_image_file(name):
+                    from pathlib import Path
 
-                    # set timebase to 24fps
+                    ue_asset_name = Path(name).stem
+
+                    # force timebase for images to match config
                     for tb in clipitem.findall("rate"):
-                        tb.find("timebase").text = "24"
+                        tb.find("timebase").text = config["frame_rate"]
 
-                    if basename[:3] in ["Sc_"]:
-                        # this is a valid conform burnin shot marker
-                        self.cshots.append(this_shot)
+                    # here we're looking for burnin files specific to this pipeline (set details in config.yaml)
+                    if self.is_conformshot_burnin(ue_asset_name):
+                        self.cshots.append(
+                            ConformShot(ue_asset_name, start, end, inp, outp)
+                        )
+                        clipitem.find("name").text = ue_asset_name
 
-                        # rename to match the corresponding level sequence in UE
-                        clipitem.find("name").text = basename
-
-                    elif basename[:3] in ["seq"]:
-                        self.seqs.append(this_shot)
+                    elif self.is_conformscene_burnin(ue_asset_name):
+                        self.scenes.append(
+                            ConformScene(ue_asset_name, start, end, inp, outp)
+                        )
+                        clipitem.find("name").text = ue_asset_name
 
                     else:
-                        self.shots.remove(this_shot)
                         track.remove(clipitem)
 
                 else:
-                    self.shots.remove(this_shot)
                     track.remove(clipitem)
 
-        # figure out full TC of episode, minus slate
-        minF = 10000
+        self.ingest_log += "\nEpisode XML contains:\n"
+        self.ingest_log += f"\t{len(self.sshots)} unreal shots,\n"
+        self.ingest_log += f"\t{len(self.cshots)} conform shots,\n"
+        self.ingest_log += f"\t{len(self.scenes)} conform scenes,\n"
+        self.ingest_log += f"\t{len(self.audio_files)} unique audio files.\n\n"
+
+        minF = 1000000
         maxF = -1
         for cshot in self.cshots:
             minF = min(minF, cshot.ef)
             maxF = max(maxF, cshot.ef)
 
-        # map cshots to their sequences
+        # map cshots to their scenes
         for cshot in self.cshots:
-            # look for all possible sequence matches for this shot
-            possible_sequences = []
-            for seq in self.seqs:
-                if seq.contains(cshot):
-                    possible_sequences.append(seq)
+            # look for all possible scene matches for this shot
+            possible_scenes = []
+            for scene in self.scenes:
+                if scene.contains(cshot):
+                    possible_scenes.append(scene)
 
             # Now choose one, if there is one
-            if len(possible_sequences) == 0:
-                self.ingest_log += f"Burnin {cshot.name} not in any sequence\n"
+            if len(possible_scenes) == 0:
+                self.ingest_log += (
+                    f"Burnin {cshot.rawname} is not contained in any scene!\n"
+                )
                 continue
 
-            seq_to_assign = None
+            scene_to_assign = None
 
-            if len(possible_sequences) == 1:
+            if len(possible_scenes) == 1:
                 # this is the easy case
-                seq_to_assign = possible_sequences[0]
+                scene_to_assign = possible_scenes[0]
 
-            elif len(possible_sequences) > 1:
-                # print(f"Found shot {cshot} that matches multiple sequences, have to do some work here.")
-                # I think the right thing to do is process these at the end
-                # but maybe we can logic it out here by using the shot number.
-                # let's make our best guesses.
-                # make sure the sequences are sorted
-                possible_sequences.sort()
-                shotnum = int(cshot.name[3:-4])
-                if shotnum == 1:  # first shot, so use the last sequence number
-                    # print("shot numbered 1, so probably use the last sequence")
-                    seq_to_assign = possible_sequences[-1]
+            elif len(possible_scenes) > 1:
+                # This shot fits into multiple scenes. But we need to pick one.
+                possible_scenes.sort()
+
+                if cshot.is_first_shot():
+                    # print("shot numbered 1, so probably use the last scene")
+                    scene_to_assign = possible_scenes[-1]
                 else:
-                    # print("based on shot number {shotnum:d}, using the first sequence")
-                    seq_to_assign = possible_sequences[0]
-                logger.warning(
-                    f"Placed shot {cshot.name} in {seq_to_assign.name} but it matched {len(possible_sequences):d} sequences."
-                )
+                    # print("based on shot number {shotnum:d}, using the first scene")
+                    scene_to_assign = possible_scenes[0]
+                # logger.warning(
+                #    f"Placed shot {cshot.name} in {scene_to_assign.name} but it matched {len(possible_scenes):d} scenes."
+                # )
 
-            cshot.name = seq_to_assign.name[3:-4] + "_" + cshot.name[3:-4]
-            cshot.seq = seq_to_assign.name
+            cshot.container = scene_to_assign
 
-        # Removed unmapped story shots
+        # Warn about unmapped story shots
         for sshot in self.sshots:
-            in_seq = False
-            for seq in self.seqs:
-                if seq.contains(sshot):
-                    in_seq = True
+            in_scene = False
+            for scene in self.scenes:
+                if scene.contains(sshot):
+                    in_scene = True
                     continue
-            # CP: When bringing in an XML from the editors for testing, pre-conform,
-            # I found that this code was deleting shots I needed to keep.
-            # Changing it to a warning message instead.
-            if not in_seq:
-                self.ingest_log += f"Shot {sshot.name} not in any sequence\n"
-                """
-                for track in self.root.findall("./sequence/media/video/track"):
-                    for clipitem in track.findall("clipitem"):
-                        name = clipitem.find("name").text
-                        if name == sshot.name:
-                            track.remove(clipitem)
-                self.sshots.remove(sshot)
-                self.shots.remove(sshot)
-                """
 
-    def process_notes(self):
-        count = 0
-        for track in self.root.findall("./sequence/media/video/track"):
-            for clipitem in track.findall("clipitem"):
-                for note in clipitem.findall("filter/effect"):
-                    if note.find("effectid").text == "GraphicAndType":
-                        start = clipitem.find("start").text
-                        end = clipitem.find("end").text
-
-                        text = note.find("name").text
-                        if not text:
-                            continue
-                        words = text.split(" ")
-                        tags = [w for w in words if w.startswith("#")]
-                        all_tags = ",".join(tags)
-                        nontags = [word for word in words if word not in all_tags]
-                        comment_without_tags = " ".join(nontags)
-                        self.notes.append(Note(start, end, tags, comment_without_tags))
-                        count += 1
-        self.ingest_log += f"{count} notes found in XML\n"
+            if not in_scene:
+                self.ingest_log += f"Shot {sshot.name()} is not in any scene\n"

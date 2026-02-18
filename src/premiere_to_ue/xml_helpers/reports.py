@@ -25,7 +25,7 @@ def audio_report(episode, to_csv=False):
         if af.is_dialogue():
             for cshot in episode.cshots:
                 if cshot.overlaps(af.sf, af.ef):
-                    af.shotlist.append(cshot.name)
+                    af.shotlist.append(cshot.name())
 
     # now write out
 
@@ -56,41 +56,6 @@ def audio_report(episode, to_csv=False):
         return output
 
 
-def cgfixes_report(episode):
-    # this report is to loop over all shots, identify those with fx and print them
-    # ideally in an easy-to-use CSV style
-
-    # want to sort this list by starting frame
-    episode.sshots.sort(key=lambda x: x.sf)
-    initial_output = "Scene #,Shot #,Fix Type,Text from cgfix report,Note,"
-    initial_output += (
-        "Source,Vis Artist Fixing,Status,Revised Shot #,Date Finished,Delivery Note\n"
-    )
-    output = initial_output
-    lastshot = None
-    last_ef = None
-    for shot in episode.sshots:
-        if shot.name == lastshot and last_ef == shot.sf:  # check for frame parity
-            output += f"{shot.scene_number()},{shot.name[:-4]},CG Conform,appears back to back\n"
-        lastshot = shot.name
-        last_ef = shot.ef
-
-    for shot in episode.sshots:
-        if shot.name.split(".")[0].split("_")[-1].isdigit() and (
-            shot.name.split(".")[0][-2] == "_"
-        ):
-            output += f"{shot.scene_number()}, {shot.name[:-4]}, CG Conform, likely versioned incorrectly in premiere\n"
-
-    for shot in episode.sshots:
-        if shot.has_fx():
-            output += (
-                f"{shot.scene_number()},{shot.name[:-4]},CG Conform, {shot.fx_str()}\n"
-            )
-    if output == initial_output:
-        return "No cg fixes found!"
-    return output
-
-
 def conform_report(episode):
     # see if we can match every conformed shot to a story shot.
     # if we can't let the user know about it.
@@ -114,9 +79,7 @@ def conform_report(episode):
 
         if len(matched) == 0:
             boarded_shots += 1
-            output += (
-                f"Warning: {cshot.name} doesn't match any story shot. Boarded only?\n"
-            )
+            output += f"Warning: Conformed shot {cshot.name()} doesn't have a matching unreal shot.\n"
         else:
             cg_shots += 1
             for m in matched:
@@ -124,35 +87,46 @@ def conform_report(episode):
                 if mtype != "perfect":
                     output += f"Possible conform mismatch detected:\n\t{cshot}\n\t{m}\n"
 
+    output += "\n"
+
     # check to make sure we have consecutive scenes.
-    sorted_seqs = [int(s.name[3:-4]) for s in episode.seqs]
-    sorted_seqs.sort()
-    if len(sorted_seqs) > 0:
-        last_seq = sorted_seqs[0]
-        for seq in sorted_seqs[1:]:
-            if last_seq == seq:
-                output += f"SCENE BURNIN WARNING: scene {last_seq} burnin exists multiple times\n"
-            elif last_seq + 1 < seq:
-                output += f"SCENE BURNIN WARNING: scene burnin may be missing between {last_seq} and {seq}\n"
-            last_seq = seq
+    sorted_scenes = [s.name() for s in episode.scenes]
+    sorted_scenes.sort()
+    if len(sorted_scenes) > 0:
+        last_scene = sorted_scenes[0]
+        for scene in sorted_scenes[1:]:
+            if last_scene == scene:
+                output += f"SCENE BURNIN WARNING: scene {last_scene} burnin exists multiple times\n"
+            # TODO: Can't do this one because we're losing the idea that scene names must be numbers.
+            # elif last_scene + 1 < scene:
+            #    output += f"SCENE BURNIN WARNING: scene burnin may be missing between {last_scene} and {scene}\n"
+            last_scene = scene
+
+    output += "\n"
 
     # now check each sequence for consecutive shots (looking for skipped burnins)
     # how to do this? Is this still a #TODO?
 
-    for seq in episode.seqs:
+    # check each scene for consecutive shots (aka look for skipped burnins)
+    # TODO: either figure out a way to include the A, B, C shot logic or remove this entirely.
+
+    for scene in episode.scenes:
         shotlist = []
         for cshot in episode.cshots:
-            if (
-                cshot.seq == seq.name and len(cshot.name) == 6
-            ):  # ignore A, B, etc shots for counting purposes
-                shotlist.append(cshot.name)
+            if cshot.container == scene:
+                shotlist.append(cshot.name())
+
+        # report the count, that's useful, and name the first and last shots too
         shotlist.sort()
 
-        last_shot_num = int(shotlist[-1][-3:])
-        if last_shot_num != len(shotlist):
-            output += f"SHOT COUNT WARNING: sequence {seq.name}!\n"
-            output += f"{len(shotlist)} shots but ends on shot {last_shot_num}\n"
+        output += (
+            f"Conform scene {scene.name()} has {len(shotlist)} shot"
+            + ("s" if len(shotlist) != 1 else "")
+            + ":"
+        )
+        output += "\n" + "\t".join([f"{shot}" for shot in shotlist]) + "\n"
 
+        """
         # we have a sorted list of shot names. Let's go through them in order, see what their CG
         # counterpart is, and flag consecutive duplicates.
         # This code is ugly, I'm sorry. If you're reading this, forgive me. It's production code.
@@ -173,4 +147,38 @@ def conform_report(episode):
             if last_cg_shot == this_shot.matched_shot.name:
                 output += f"WARNING: shot {cshot.name} references same CG shot ({this_shot.matched_shot.name}) as the previous shot.\n"
             last_cg_shot = this_shot.matched_shot.name
+        """
+    return output
+
+
+def cgfixes_report(episode):
+    # this report is to loop over all shots, identify those with editorial fx and print them
+    # ideally in an easy-to-use CSV style
+
+    # TODO: do we need/want the CSV aspect of this?
+
+    # want to sort this list by starting frame
+    episode.sshots.sort(key=lambda x: x.sf)
+
+    # for CSV-type reporting:
+    # initial_output = "Shot,Fix Type,Report Text\n"
+    initial_output = ""
+    output = initial_output
+    lastshotname = None
+    last_ef = None
+    for shot in episode.sshots:
+        if shot.name() == lastshotname and last_ef == shot.sf:  # check for frame parity
+            output += f"Warning: {lastshotname} appears back to back in the edit. This may be fine if it's a cut, but worth checking.\n"
+            # output += f"{lastshotname},CG Conform,appears back to back\n"
+        lastshotname = shot.name()
+        last_ef = shot.ef
+
+    for shot in episode.sshots:
+        if shot.has_fx():
+            output += (
+                # f"{shot.name()},CG Conform, {shot.fx_str()}\n"
+                f"Warning: {shot.name()} has editorial FX applied that may need CG fixes: {shot.fx_str()}\n"
+            )
+    if output == initial_output:
+        return "No CG fixes found!"
     return output
