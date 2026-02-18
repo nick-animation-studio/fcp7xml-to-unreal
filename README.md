@@ -68,17 +68,6 @@ python -m pip install ".[dev]" install with optional development packages
 pre-commit install
 ```
 
-### Syncsketch
-
-To use the Syncsketch functionality, a username and API key must be provided. These may be read from a `.env` file in the directory the application is launched from.
-
-Sample `.env` file contents:
-
-```shell
-SYNCSKETCH_USERNAME=my-syncsketch-username
-SYNCSKETCH_API_KEY=my-syncsketch-api-key
-```
-
 ## Contributing
 
 Contributions to improve this utility are welcome! Please submit [issues](https://github.com/viacomcbs/premiere-to-ue/issues) and [pull requests](https://github.com/viacomcbs/premiere-to-ue/pulls) on GitHub.

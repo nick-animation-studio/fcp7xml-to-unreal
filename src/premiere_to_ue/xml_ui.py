@@ -109,7 +109,6 @@ def main():
     # xml_ui.create_button("CG Fixes report", xml_ui.output_cgfixes)
     # xml_ui.create_button("Conform report", xml_ui.output_conform)
     xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)
-    # xml_ui.create_button("Upload notes to syncsketch", xml_ui.confirm_upload)
 
     tk.Entry(frm, textvariable=xml_file_string, width=100).grid(
         column=0, row=0, sticky="news", columnspan=len(xml_ui.xml_functions)

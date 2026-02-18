@@ -10,7 +10,6 @@ authors = [
 dependencies = [
     "PyYAML>=6.0.3",
     "python-dotenv>=1.2.1",
-    "syncsketch==1.0.10",
     "tqdm>=4.66.4",
 ]
 requires-python = ">=3.9"
