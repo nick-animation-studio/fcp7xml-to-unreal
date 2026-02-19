@@ -1,7 +1,7 @@
 from urllib.parse import unquote
 
-from premiere_to_ue import config, logger
-from premiere_to_ue.models.helpers import frames_to_tc
+from fcp7xml_to_unreal import config, logger
+from fcp7xml_to_unreal.models.helpers import frames_to_tc
 
 
 class AudioFile:

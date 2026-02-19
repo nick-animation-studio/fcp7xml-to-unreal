@@ -62,7 +62,7 @@ python -m pip install -U pip
 
 # install
 python -m pip install .
-python -m pip install ".[dev]" install with optional development packages
+python -m pip install ".[dev]" # install with optional development packages
 
 # Install Git pre-commit hooks
 pre-commit install

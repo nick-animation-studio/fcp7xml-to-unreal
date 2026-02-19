@@ -1,4 +1,4 @@
-from premiere_to_ue.models import helpers
+from fcp7xml_to_unreal.models import helpers
 
 
 def test_tc_to_frames_valid():

@@ -1,6 +1,6 @@
 [project]
-name = "premiere-to-ue"
-version = "0.1.1"
+name = "fcp7xml-to-unreal"
+version = "0.2.0"
 description = "Filter FCP XML files for import into Unreal Engine."
 authors = [
     {name = "Chris Perry", email = "christopher.perry@nick.com"},
@@ -45,18 +45,18 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://viacomcbs.github.io/premiere-to-ue/"
+Homepage = "https://viacomcbs.github.io/fcp7xml-to-unreal/"
 #Documentation = "https://readthedocs.org"
-Repository = "https://github.com/viacomcbs/premiere-to-ue.git"
-Issues = "https://github.com/viacomcbs/premiere-to-ue"
-Changelog = "https://github.com/viacomcbs/premiere-to-ue/blob/main/CHANGELOG.md"
+Repository = "https://github.com/viacomcbs/fcp7xml-to-unreal.git"
+Issues = "https://github.com/viacomcbs/fcp7xml-to-unreal"
+Changelog = "https://github.com/viacomcbs/fcp7xml-to-unreal/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/premiere_to_ue"]
+packages = ["src/fcp7xml_to_unreal"]
 
 [project.optional-dependencies]
 dev = [
@@ -77,7 +77,7 @@ docs = [
 ]
 
 [project.scripts]
-premiere-to-ue = "premiere_to_ue.xml_ui:main"
+fcp7xml-to-unreal = "fcp7xml_to_unreal.xml_ui:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

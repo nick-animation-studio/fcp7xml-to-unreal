@@ -1,9 +1,9 @@
 import re
 import xml.etree.ElementTree as ET
 
-from premiere_to_ue import config, logger
-from premiere_to_ue.models.Audio import AudioFile
-from premiere_to_ue.models.Shot import ConformScene, ConformShot, UnrealShot
+from fcp7xml_to_unreal import config, logger
+from fcp7xml_to_unreal.models.Audio import AudioFile
+from fcp7xml_to_unreal.models.Shot import ConformScene, ConformShot, UnrealShot
 
 
 class Episode:

@@ -1,6 +1,6 @@
 # Configuration
 
-**fcp7xml-to-unreal** reads configuration options from a YAML file. A [default configuration file](../src/premiere_to_ue/config.yaml) is provided, but if a file named `config.yaml` exists in the current directory, it will take precedence. The utility reports to the console about where configuration is read from.
+**fcp7xml-to-unreal** reads configuration options from a YAML file. A [default configuration file](../src/fcp7xml_to_unreal/config.yaml) is provided, but if a file named `config.yaml` exists in the current directory, it will take precedence. The utility reports to the console about where configuration is read from.
 
 ## Default Config File
 

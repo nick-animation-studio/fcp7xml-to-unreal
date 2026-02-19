@@ -1,6 +1,6 @@
-from premiere_to_ue.models.Audio import AudioFile
-from premiere_to_ue.models.Shot import ConformScene, ConformShot, UnrealShot
-from premiere_to_ue.xml_helpers.reports import (
+from fcp7xml_to_unreal.models.Audio import AudioFile
+from fcp7xml_to_unreal.models.Shot import ConformScene, ConformShot, UnrealShot
+from fcp7xml_to_unreal.xml_helpers.reports import (
     audio_report,
     cgfixes_report,
     conform_report,

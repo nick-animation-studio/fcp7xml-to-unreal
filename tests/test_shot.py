@@ -1,4 +1,4 @@
-from premiere_to_ue.models.Shot import UnrealShot
+from fcp7xml_to_unreal.models.Shot import UnrealShot
 
 
 def test_init_and_scene_number_and_durations():

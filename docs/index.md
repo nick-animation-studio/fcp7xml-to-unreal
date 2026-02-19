@@ -39,7 +39,7 @@ This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-
 ## Workflow
 
 - Set up your narrative project using some shot naming and structure conventions. Show, Scene, and Shot are the default terms used here - see [film_language](./film_language.md) for details.
-  - If configuring differently from the defaults, copy and edit a [config.yaml](../src/premiere_to_ue/config.yaml) file as needed. See [configuration.md](./configuration.md) for details.
+  - If configuring differently from the defaults, copy and edit a [config.yaml](../src/fcp7xml_to_unreal/config.yaml) file as needed. See [configuration.md](./configuration.md) for details.
 - Render a movie for each shot (LevelSequence) from Unreal Engine, following the naming established in `config.yaml`.
   - The defaults provided assume a Show/Scene/Shot naming convention, where the movie rendered for Scene 02 Shot 003 of a Show named 101 would be named `101_02_shot_003.mov`.
   - **Note:** the name of the rendered movie file must match the name of the LevelSequence in the Unreal Project (101_02_shot_003.mov is rendered from a LevelSequence named 101_02_shot_003)

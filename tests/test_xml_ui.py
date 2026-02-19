@@ -1,6 +1,6 @@
 import types
 
-from premiere_to_ue import xml_ui as xu
+from fcp7xml_to_unreal import xml_ui as xu
 
 
 class DummyStringVar:
