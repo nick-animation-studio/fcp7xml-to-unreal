@@ -1,6 +1,6 @@
 import pytest
 
-from premiere_to_ue.models import Note
+from fcp7xml_to_unreal.models import Note
 
 
 @pytest.fixture(

@@ -1,4 +1,4 @@
-from premiere_to_ue import logger
+from fcp7xml_to_unreal import logger
 
 
 def tc_to_frames(tc="00:59:50:00"):

@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import DISABLED, END, NORMAL, RIGHT, Toplevel, filedialog, messagebox, ttk
 
-from premiere_to_ue import __version__
-from premiere_to_ue.models.Episode import Episode
-from premiere_to_ue.xml_helpers.reports import (
+from fcp7xml_to_unreal import __version__
+from fcp7xml_to_unreal.models.Episode import Episode
+from fcp7xml_to_unreal.xml_helpers.reports import (
     audio_report,
     cgfixes_report,
     conform_report,
@@ -96,7 +96,7 @@ class xmlUI:
 def main():
     root = tk.Tk()
     root.resizable(True, True)
-    root.title(f"Premiere to UE XML utility v{__version__}")
+    root.title(f"fcp7xml-to-unreal v{__version__}")
     frm = ttk.Frame(root, padding=10)
     frm.grid()
 
@@ -105,7 +105,7 @@ def main():
 
     xml_ui = xmlUI(root=root, frm=frm, xml_file_string=xml_file_string)
 
-    xml_ui.create_button("Audio report", xml_ui.output_audio)
+    xml_ui.create_button("Show Audio report CSV", xml_ui.output_audio)
     # xml_ui.create_button("CG Fixes report", xml_ui.output_cgfixes)
     # xml_ui.create_button("Conform report", xml_ui.output_conform)
     xml_ui.create_button("Output filtered XML", xml_ui.output_filtered_xml)

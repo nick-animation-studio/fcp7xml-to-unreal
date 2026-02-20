@@ -1,7 +1,7 @@
 import os
 
-from premiere_to_ue import config
-from premiere_to_ue.models.Episode import Episode
+from fcp7xml_to_unreal import config
+from fcp7xml_to_unreal.models.Episode import Episode
 
 
 def make_xml(tmp_path):

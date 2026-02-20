@@ -2,8 +2,8 @@
 
 from urllib.parse import unquote
 
-from premiere_to_ue.models.Audio import AudioFile
-from premiere_to_ue.models.helpers import frames_to_tc
+from fcp7xml_to_unreal.models.Audio import AudioFile
+from fcp7xml_to_unreal.models.helpers import frames_to_tc
 
 
 def test_initialization_and_label():

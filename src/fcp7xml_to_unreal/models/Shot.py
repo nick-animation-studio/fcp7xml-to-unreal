@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from premiere_to_ue import config
+from fcp7xml_to_unreal import config
 
 
 # A TimelineEntity is something that lives in a timeline, could be a shot, a burnin, a scene marker etc.

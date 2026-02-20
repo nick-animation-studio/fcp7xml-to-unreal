@@ -3,7 +3,7 @@ import os
 import subprocess
 import tempfile
 
-from premiere_to_ue.models.Audio import AudioFile
+from fcp7xml_to_unreal.models.Audio import AudioFile
 
 
 def audio_report(episode, to_csv=False):
