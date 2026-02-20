@@ -7,8 +7,6 @@
  [![Build Status](https://github.com/viacomcbs/fcp7xml-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/viacomcbs/fcp7xml-to-unreal/actions/workflows/python-package.yml)
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://viacomcbs.github.io/fcp7xml-to-unreal/)
 [![GitHub License](https://img.shields.io/github/license/viacomcbs/fcp7xml-to-unreal)](https://github.com/viacomcbs/fcp7xml-to-unreal/blob/main/LICENSE)
-<!-- Pytest Coverage Comment:Begin -->
-<!-- Pytest Coverage Comment:End -->
 
 `fcp7xml-to-unreal` is a utility for filtering FCP XML (FCP 7 XML v5) editorial output for import into Unreal Engine.
 
