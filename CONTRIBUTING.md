@@ -22,7 +22,7 @@ is a great starting point if you are new to version control.
 
 The goal is to maintain a diverse community that's pleasant for everyone.
 **Please be considerate and respectful of others**. Everyone must abide by our
-[Code of Conduct](https://github.com/nick-animation-studio/fcp7xml-to-unreal/.github/blob/main/CODE_OF_CONDUCT.md)
+[Code of Conduct](./CODE_OF_CONDUCT.md)
 and we encourage all to read it carefully.
 
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.

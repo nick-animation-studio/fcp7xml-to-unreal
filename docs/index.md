@@ -4,9 +4,9 @@
 <h1 align="center">FCP7XML to Unreal</h1>
 <br></br>
 
- [![Build Status](https://github.com/viacomcbs/fcp7xml-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/viacomcbs/fcp7xml-to-unreal/actions/workflows/python-package.yml)
-[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://viacomcbs.github.io/fcp7xml-to-unreal/)
-[![GitHub License](https://img.shields.io/github/license/viacomcbs/fcp7xml-to-unreal)](https://github.com/viacomcbs/fcp7xml-to-unreal/blob/main/LICENSE)
+ [![Build Status](https://github.com/nick-animation-studio/fcp7xml-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/nick-animation-studio/fcp7xml-to-unreal/actions/workflows/python-package.yml)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://nick-animation-studio.github.io/fcp7xml-to-unreal/)
+[![GitHub License](https://img.shields.io/github/license/nick-animation-studio/fcp7xml-to-unreal)](https://github.com/nick-animation-studio/fcp7xml-to-unreal/blob/main/LICENSE)
 
 `fcp7xml-to-unreal` is a utility for processing XML editorial output for import into Unreal Engine.
 
@@ -65,12 +65,12 @@ Note: Other editing applications that can export Final Cut Pro 7 XML v5 XML shou
 
 ## Changes
 
-See the product [Change Log](https://github.com/viacomcbs/fcp7xml-to-unreal/blob/main/CHANGELOG.md) on GitHub for a history of changes.
+See the product [Change Log](https://github.com/nick-animation-studio/fcp7xml-to-unreal/blob/main/CHANGELOG.md) on GitHub for a history of changes.
 
 ## Problems?
 
-Please submit [issues](https://github.com/viacomcbs/fcp7xml-to-unreal/issues) on GitHub.
+Please submit [issues](https://github.com/nick-animation-studio/fcp7xml-to-unreal/issues) on GitHub.
 
 ## Want to contribute?
 
-Details on the GitHub page: [https://github.com/viacomcbs/fcp7xml-to-unreal](https://github.com/viacomcbs/fcp7xml-to-unreal).
+Details on the GitHub page: [https://github.com/nick-animation-studio/fcp7xml-to-unreal](https://github.com/nick-animation-studio/fcp7xml-to-unreal).

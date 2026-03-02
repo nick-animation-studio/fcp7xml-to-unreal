@@ -45,11 +45,11 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://viacomcbs.github.io/fcp7xml-to-unreal/"
+Homepage = "https://nick-animation-studio.github.io/fcp7xml-to-unreal/"
 #Documentation = "https://readthedocs.org"
-Repository = "https://github.com/viacomcbs/fcp7xml-to-unreal.git"
-Issues = "https://github.com/viacomcbs/fcp7xml-to-unreal"
-Changelog = "https://github.com/viacomcbs/fcp7xml-to-unreal/blob/main/CHANGELOG.md"
+Repository = "https://github.com/nick-animation-studio/fcp7xml-to-unreal.git"
+Issues = "https://github.com/nick-animation-studio/fcp7xml-to-unreal"
+Changelog = "https://github.com/nick-animation-studio/fcp7xml-to-unreal/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["hatchling"]
