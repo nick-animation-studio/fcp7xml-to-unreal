@@ -4,12 +4,12 @@
 <h1 align="center">FCP7XML to Unreal</h1>
 <br></br>
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fcp7-to-unreal)](https://pypi.org/project/fcp7-to-unreal/)
- [![Build Status](https://github.com/nick-animation-studio/fcp7-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/nick-animation-studio/fcp7-to-unreal/actions/workflows/python-package.yml)
-[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://nick-animation-studio.github.io/fcp7-to-unreal/) [![PyPI - Version](https://img.shields.io/pypi/v/fcp7-to-unreal)](https://pypi.org/project/fcp7-to-unreal/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fcp7xml-to-unreal)](https://pypi.org/project/fcp7xml-to-unreal/)
+ [![Build Status](https://github.com/nick-animation-studio/fcp7xml-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/nick-animation-studio/fcp7xml-to-unreal/actions/workflows/python-package.yml)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://nick-animation-studio.github.io/fcp7xml-to-unreal/) [![PyPI - Version](https://img.shields.io/pypi/v/fcp7xml-to-unreal)](https://pypi.org/project/fcp7xml-to-unreal/)
 
-[![GitHub License](https://img.shields.io/github/license/nick-animation-studio/fcp7-to-unreal)](https://github.com/nick-animation-studio/fcp7-to-unreal/blob/main/LICENSE)
-[![Tests Status](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/junit/tests-badge.svg)](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/junit/report.html) [![Coverage Status](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/coverage/coverage-badge.svg)](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/coverage/index.html)
+[![GitHub License](https://img.shields.io/github/license/nick-animation-studio/fcp7xml-to-unreal)](https://github.com/nick-animation-studio/fcp7xml-to-unreal/blob/main/LICENSE)
+[![Tests Status](https://nick-animation-studio.github.io/fcp7xml-to-unreal/reports/junit/tests-badge.svg)](https://nick-animation-studio.github.io/fcp7xml-to-unreal/reports/junit/report.html) [![Coverage Status](https://nick-animation-studio.github.io/fcp7xml-to-unreal/reports/coverage/coverage-badge.svg)](https://nick-animation-studio.github.io/fcp7xml-to-unreal/reports/coverage/index.html)
 
 `fcp7xml-to-unreal` is a utility for processing XML editorial output for import into Unreal Engine.
 
@@ -42,7 +42,7 @@ This will provide the `fcp7xml-to-unreal` utility. Launch it by typing `fcp7xml-
 ## Workflow
 
 - Set up your narrative project using some shot naming and structure conventions. Show, Scene, and Shot are the default terms used here - see [film_language](./film_language.md) for details.
-  - If configuring differently from the defaults, copy and edit a [config.yaml](../src/fcp7xml_to_unreal/config.yaml) file as needed. See [configuration.md](./configuration.md) for details.
+  - If configuring differently from the defaults, copy and edit a local [config.yaml](https://github.com/nick-animation-studio/fcp7xml-to-unreal/blob/main/src/fcp7xml_to_unreal/config.yaml) file as needed. See [configuration.md](./configuration.md) for details.
 - Render a movie for each shot (LevelSequence) from Unreal Engine, following the naming established in `config.yaml`.
   - The defaults provided assume a Show/Scene/Shot naming convention, where the movie rendered for Scene 02 Shot 003 of a Show named 101 would be named `101_02_shot_003.mov`.
   - **Note:** the name of the rendered movie file must match the name of the LevelSequence in the Unreal Project (101_02_shot_003.mov is rendered from a LevelSequence named 101_02_shot_003)
