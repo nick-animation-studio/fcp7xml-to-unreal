@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Configuration - fcp7xml-to-unreal</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Configuration";
+        var mkdocs_page_input_path = "configuration.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> fcp7xml-to-unreal
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Configuration</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#default-config-file">Default Config File</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../film_language/">Film Language</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../marking_shots/">Marking Shots</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">fcp7xml-to-unreal</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/nick-animation-studio/fcp7xml-to-unreal/edit/main/docs/configuration.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
+<p><strong>fcp7xml-to-unreal</strong> reads configuration options from a YAML file. A <a href="../src/fcp7xml_to_unreal/config.yaml">default configuration file</a> is provided, but if a file named <code>config.yaml</code> exists in the current directory, it will take precedence. The utility reports to the console about where configuration is read from.</p>
+<h2 id="default-config-file">Default Config File<a class="headerlink" href="#default-config-file" title="Permanent link">&para;</a></h2>
+<pre><code class="language-yaml">audio:
+  music_track_prefix: &quot;Music&quot;
+  sfx_track_prefix: &quot;SFX&quot;
+  track_colors:
+    brown: &quot;Scratch VO&quot;
+    yellow: &quot;From Audio Library&quot;
+  track_color_nomatch_label: &quot;Temp Material&quot;
+
+frame_rate: '24'
+shot_name_regex: '[\d]{3}_[a-zA-Z0-9]+_shot_[\w]+.[a-zA-Z0-9]+'
+shot_name_resubs: [
+  { 'pattern': r'\(.*\)', 'replacement': r'' },
+  { 'pattern': r'_SB', 'replacement': r'' },
+  { 'pattern': r&quot;\_\d\d\d\d\d\d\d\d&quot;, 'replacement': r''},
+  ]
+
+MOVIE_FILE_SUFFIXES: {'mov'}
+IMAGE_FILE_SUFFIXES: {&quot;png&quot;, &quot;jpg&quot;}
+
+# Here are the values for the provided burnins
+CONFORMSHOT_BURNIN_PREFIX: &quot;shot_&quot;
+CONFORMSCENE_BURNIN_PREFIX: &quot;scene_&quot;
+
+# Here are the values for the Premiere test .xml file
+# CONFORMSHOT_BURNIN_PREFIX: &quot;Sc_&quot;
+# CONFORMSCENE_BURNIN_PREFIX: &quot;seq&quot;
+</code></pre>
+<p><code>shot_name_regex</code> - regex that will be used to match the <code>name</code> of clipitems in the XML. The default regex above parses Shot naming as follows:</p>
+<p>101_01_shot_001.mov: Show '101', Scene '01', Shot '001', '.mov' extension</p>
+<p><code>shot_name_resubs</code> - regexes applied to the <code>name</code> of clipitems in the XML. The default regexes above act as follows:</p>
+<ul>
+<li>remove suffixes like "(abc)" and "(temp)" from the end of the name of shots, if present.</li>
+<li>remove "_SB" from the end of the name of shots, if present.</li>
+<li>remove date strings like "_20241201" from the end of the name of shots, if present.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../film_language/" class="btn btn-neutral float-right" title="Film Language">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/nick-animation-studio/fcp7xml-to-unreal" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../film_language/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
