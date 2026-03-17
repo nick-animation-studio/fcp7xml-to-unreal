@@ -38,14 +38,9 @@ jobs:
         coverage report
         coverage xml -o ./tests/reports/coverage/coverage.xml
         coverage html -d ./tests/reports/coverage
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./tests/reports/coverage/coverage.xml
     # Share ./docs/reports so that they can be deployed with docs in next job, only retain for 1 day for debugging
     - name: Share reports with other jobs
-      uses: actions/upload-artifact@v4.3.1
+      uses: actions/upload-artifact@v5
       with:
         name: reports_dir-${{ matrix.python-version }}
         path: ./tests/reports
