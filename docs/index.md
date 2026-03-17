@@ -4,9 +4,12 @@
 <h1 align="center">FCP7XML to Unreal</h1>
 <br></br>
 
- [![Build Status](https://github.com/nick-animation-studio/fcp7xml-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/nick-animation-studio/fcp7xml-to-unreal/actions/workflows/python-package.yml)
-[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://nick-animation-studio.github.io/fcp7xml-to-unreal/)
-[![GitHub License](https://img.shields.io/github/license/nick-animation-studio/fcp7xml-to-unreal)](https://github.com/nick-animation-studio/fcp7xml-to-unreal/blob/main/LICENSE)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fcp7-to-unreal)](https://pypi.org/project/fcp7-to-unreal/)
+ [![Build Status](https://github.com/nick-animation-studio/fcp7-to-unreal/actions/workflows/python-package.yml/badge.svg)](https://github.com/nick-animation-studio/fcp7-to-unreal/actions/workflows/python-package.yml)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://nick-animation-studio.github.io/fcp7-to-unreal/) [![PyPI - Version](https://img.shields.io/pypi/v/fcp7-to-unreal)](https://pypi.org/project/fcp7-to-unreal/)
+
+[![GitHub License](https://img.shields.io/github/license/nick-animation-studio/fcp7-to-unreal)](https://github.com/nick-animation-studio/fcp7-to-unreal/blob/main/LICENSE)
+[![Tests Status](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/junit/tests-badge.svg)](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/junit/report.html) [![Coverage Status](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/coverage/coverage-badge.svg)](https://nick-animation-studio.github.io/fcp7-to-unreal/reports/coverage/index.html)
 
 `fcp7xml-to-unreal` is a utility for processing XML editorial output for import into Unreal Engine.
 
