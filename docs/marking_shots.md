@@ -21,4 +21,4 @@ When the XML filter detects Burnins in addition to Shots and Scenes, it will pas
 
 Also, non-Shot items like leaders and breaks, and footage that does not correspond to a Shot in Unreal can be present in an edit - this approach removes them from the checking and syncing steps.
 
-Some example burn-in images and a generator script are provided in [resources](../resources) for this project.
+Some example burn-in images and a generator script are provided on GitHub in [resources](https://github.com/nick-animation-studio/fcp7xml-to-unreal/tree/main/resources) for this project.
